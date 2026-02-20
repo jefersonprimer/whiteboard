@@ -241,16 +241,16 @@ export const Canvas: React.FC<CanvasProps> = ({
     setIsDrawing(false);
 
     const finalElement = { ...newElement };
-    if (finalElement.type === 'rectangle') {
+    if (['rectangle', 'circle', 'triangle', 'diamond'].includes(finalElement.type)) {
       const width = finalElement.width ?? 0;
       const height = finalElement.height ?? 0;
       if (width < 0) {
         finalElement.x = finalElement.x + width;
-        finalElement.width = -width;
+        finalElement.width = Math.abs(width);
       }
       if (height < 0) {
         finalElement.y = finalElement.y + height;
-        finalElement.height = -height;
+        finalElement.height = Math.abs(height);
       }
     }
 
@@ -307,7 +307,16 @@ export const Canvas: React.FC<CanvasProps> = ({
     const id = e.target.id();
     const element = elements.find((el) => el.id === id);
     if (element) {
-      const updatedElement = { ...element, x: e.target.x(), y: e.target.y() };
+      let nx = e.target.x();
+      let ny = e.target.y();
+
+      // Subtract half-width/height for center-based shapes to store top-left in DB
+      if (element.type === 'circle' || element.type === 'triangle' || element.type === 'diamond') {
+        nx -= (element.width || 0) / 2;
+        ny -= (element.height || 0) / 2;
+      }
+
+      const updatedElement = { ...element, x: nx, y: ny };
       setElements(prev => prev.map((el) => el.id === id ? updatedElement : el));
       await saveElement(updatedElement);
     }
@@ -584,7 +593,7 @@ export const Canvas: React.FC<CanvasProps> = ({
               {newElement.type === 'triangle' && (
                 <RegularPolygon
                   x={newElement.x + (newElement.width ?? 0) / 2} y={newElement.y + (newElement.height ?? 0) / 2} 
-                  sides={3} radius={Math.abs(newElement.width ?? 0) / 2} scaleY={Math.abs((newElement.height ?? 0) / (Math.abs(newElement.width ?? 0) || 1))}
+                  sides={3} radius={Math.abs(newElement.width ?? 0) / 2} scaleY={Math.abs((newElement.height ?? 0) / (Math.max(Math.abs(newElement.width ?? 0), 1)))}
                   stroke={newElement.stroke} strokeWidth={newElement.strokeWidth}
                   fill={newElement.fill} opacity={newElement.opacity ?? 0.5}
                   dash={getDash(newElement.strokeStyle)}
@@ -593,7 +602,7 @@ export const Canvas: React.FC<CanvasProps> = ({
               {newElement.type === 'diamond' && (
                 <RegularPolygon
                   x={newElement.x + (newElement.width ?? 0) / 2} y={newElement.y + (newElement.height ?? 0) / 2} 
-                  sides={4} radius={Math.abs(newElement.width ?? 0) / 2} scaleY={Math.abs((newElement.height ?? 0) / (Math.abs(newElement.width ?? 0) || 1))}
+                  sides={4} radius={Math.abs(newElement.width ?? 0) / 2} scaleY={Math.abs((newElement.height ?? 0) / (Math.max(Math.abs(newElement.width ?? 0), 1)))}
                   stroke={newElement.stroke} strokeWidth={newElement.strokeWidth}
                   fill={newElement.fill} opacity={newElement.opacity ?? 0.5}
                   dash={getDash(newElement.strokeStyle)}
