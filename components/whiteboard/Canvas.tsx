@@ -448,18 +448,61 @@ export const Canvas: React.FC<CanvasProps> = ({
     }
   }, [selectedIds, elements]);
 
+  const [clipboard, setClipboard] = useState<WhiteboardElement[]>([]);
+
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
+      const isInput = document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.tagName === 'INPUT';
+      if (isInput) return;
+
+      // DELETE / BACKSPACE
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIds.length > 0) {
-        if (document.activeElement?.tagName === 'TEXTAREA') return;
         for (const id of selectedIds) await db.elements.delete(id);
         setElements(prev => prev.filter(el => !selectedIds.includes(el.id)));
         setSelectedIds([]);
+        return;
+      }
+
+      // CTRL + C (Copy)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+        const selected = elements.filter(el => selectedIds.includes(el.id));
+        if (selected.length > 0) {
+          setClipboard(JSON.parse(JSON.stringify(selected))); // Deep clone
+          console.log('Copied', selected.length, 'elements');
+        }
+        return;
+      }
+
+      // CTRL + V (Paste)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+        if (clipboard.length === 0) return;
+
+        const offset = 20;
+        const newPastedElements = clipboard.map(el => ({
+          ...el,
+          id: nanoid(),
+          x: el.x + offset,
+          y: el.y + offset,
+        }));
+
+        // Add to state and DB
+        setElements(prev => [...prev, ...newPastedElements]);
+        for (const el of newPastedElements) {
+          await saveElement(el);
+        }
+
+        // Select the newly pasted elements
+        setSelectedIds(newPastedElements.map(el => el.id));
+        
+        // Update clipboard for next paste (cumulative offset)
+        setClipboard(newPastedElements);
+        console.log('Pasted', newPastedElements.length, 'elements');
+        return;
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedIds, setElements, setSelectedIds]);
+  }, [selectedIds, elements, clipboard, setElements, setSelectedIds]);
 
   const getDash = (style: string) => {
     if (style === 'dashed') return [10, 5];
