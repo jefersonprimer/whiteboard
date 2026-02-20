@@ -1,7 +1,7 @@
 import React from 'react';
-import { Hand, MousePointer2, Square, Circle, Type, Minus, Triangle, ArrowRight, Pencil, Image as ImageIcon, Eraser } from 'lucide-react';
+import { Hand, MousePointer2, Square, Circle, Type, Minus, Triangle, ArrowRight, Pencil, Image as ImageIcon, Eraser, Diamond } from 'lucide-react';
 
-export type Tool = 'hand' | 'select' | 'rectangle' | 'triangle' | 'circle' | 'arrow' | 'line' | 'pencil' | 'text' | 'image' | 'eraser';
+export type Tool = 'hand' | 'select' | 'rectangle' | 'diamond' | 'triangle' | 'circle' | 'arrow' | 'line' | 'pencil' | 'text' | 'image' | 'eraser';
 
 interface ToolbarProps {
   activeTool: Tool;
@@ -14,6 +14,7 @@ const tools: { id: Tool; icon: React.ReactNode; label: string; isAction?: boolea
   { id: 'hand', icon: <Hand size={18} />, label: 'Pan' },
   { id: 'select', icon: <MousePointer2 size={18} />, label: 'Select' },
   { id: 'rectangle', icon: <Square size={18} />, label: 'Rectangle' },
+  { id: 'diamond', icon: <Diamond size={18} />, label: 'Diamond' },
   { id: 'triangle', icon: <Triangle size={18} />, label: 'Triangle' },
   { id: 'circle', icon: <Circle size={18} />, label: 'Circle' },
   { id: 'arrow', icon: <ArrowRight size={18} />, label: 'Arrow' },

@@ -2,7 +2,7 @@ import Dexie, { type Table } from 'dexie';
 
 export interface WhiteboardElement {
   id: string;
-  type: 'rectangle' | 'circle' | 'text' | 'line' | 'triangle' | 'arrow' | 'pencil' | 'image';
+  type: 'rectangle' | 'circle' | 'text' | 'line' | 'triangle' | 'arrow' | 'pencil' | 'image' | 'diamond';
   x: number;
   y: number;
   width?: number;

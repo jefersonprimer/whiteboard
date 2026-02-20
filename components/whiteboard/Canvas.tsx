@@ -162,6 +162,7 @@ export const Canvas: React.FC<CanvasProps> = ({
       textAlign: 'left',
       ...defaultProps,
       ...(activeTool === 'rectangle' && { width: 0, height: 0 }),
+      ...(activeTool === 'diamond' && { radius: 0 }),
       ...(activeTool === 'circle' && { radius: 0 }),
       ...(activeTool === 'triangle' && { radius: 0 }),
       ...(activeTool === 'line' && { points: [0, 0, 0, 0] }),
@@ -207,7 +208,7 @@ export const Canvas: React.FC<CanvasProps> = ({
     if (activeTool === 'rectangle') {
       updatedElement.width = pos.x - newElement.x;
       updatedElement.height = pos.y - newElement.y;
-    } else if (activeTool === 'circle' || activeTool === 'triangle') {
+    } else if (activeTool === 'circle' || activeTool === 'triangle' || activeTool === 'diamond') {
       const dx = pos.x - newElement.x;
       const dy = pos.y - newElement.y;
       updatedElement.radius = Math.sqrt(dx * dx + dy * dy);
@@ -281,7 +282,7 @@ export const Canvas: React.FC<CanvasProps> = ({
       if (element.type === 'rectangle' || element.type === 'text' || element.type === 'image') {
         updatedElement.width = node.width() * node.scaleX();
         updatedElement.height = node.height() * node.scaleY();
-      } else if (element.type === 'circle' || element.type === 'triangle') {
+      } else if (element.type === 'circle' || element.type === 'triangle' || element.type === 'diamond') {
         updatedElement.radius = (node.width() * node.scaleX()) / 2;
       }
       node.scaleX(1); node.scaleY(1);
@@ -485,6 +486,7 @@ export const Canvas: React.FC<CanvasProps> = ({
 
             if (el.type === 'rectangle') return <Rect key={el.id} {...commonProps} width={el.width ?? 0} height={el.height ?? 0} cornerRadius={el.edges === 'round' ? 10 : 0} />;
             if (el.type === 'circle') return <Circle key={el.id} {...commonProps} radius={el.radius ?? 0} />;
+            if (el.type === 'diamond') return <RegularPolygon key={el.id} {...commonProps} sides={4} radius={el.radius ?? 0} />;
             if (el.type === 'triangle') return <RegularPolygon key={el.id} {...commonProps} sides={3} radius={el.radius ?? 0} />;
             if (el.type === 'line' || el.type === 'pencil') return <Line key={el.id} {...commonProps} points={el.points || []} tension={el.type === 'pencil' ? 0.5 : 0} />;
             if (el.type === 'arrow') return <Arrow key={el.id} {...commonProps} points={el.points || []} fill={el.stroke} pointerAtEnding={el.arrowheads} />;
@@ -515,6 +517,14 @@ export const Canvas: React.FC<CanvasProps> = ({
               {newElement.type === 'triangle' && (
                 <RegularPolygon
                   x={newElement.x} y={newElement.y} sides={3} radius={newElement.radius ?? 0}
+                  stroke={newElement.stroke} strokeWidth={newElement.strokeWidth}
+                  fill={newElement.fill} opacity={newElement.opacity ?? 0.5}
+                  dash={getDash(newElement.strokeStyle)}
+                />
+              )}
+              {newElement.type === 'diamond' && (
+                <RegularPolygon
+                  x={newElement.x} y={newElement.y} sides={4} radius={newElement.radius ?? 0}
                   stroke={newElement.stroke} strokeWidth={newElement.strokeWidth}
                   fill={newElement.fill} opacity={newElement.opacity ?? 0.5}
                   dash={getDash(newElement.strokeStyle)}

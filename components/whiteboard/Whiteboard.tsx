@@ -119,7 +119,7 @@ export default function Whiteboard() {
   }, [elements, selectedIds]);
 
   const selectedElements = elements.filter(el => selectedIds.includes(el.id));
-  const isDrawingTool = ['rectangle', 'circle', 'triangle', 'line', 'arrow', 'pencil', 'text', 'image'].includes(activeTool);
+  const isDrawingTool = ['rectangle', 'circle', 'triangle', 'diamond', 'line', 'arrow', 'pencil', 'text', 'image'].includes(activeTool);
 
   return (
     <div className="relative w-full h-screen bg-gray-50">

@@ -54,7 +54,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     </div>
   );
 
-  const isShape = ['rectangle', 'circle', 'triangle', 'line', 'arrow'].includes(type);
+  const isShape = ['rectangle', 'circle', 'triangle', 'diamond', 'line', 'arrow'].includes(type);
   const isPencil = type === 'pencil';
   const isText = type === 'text';
   const isImage = type === 'image';
@@ -160,7 +160,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
       )}
 
       {/* EDGES */}
-      {(['rectangle', 'triangle', 'line', 'image'].includes(type)) && (
+      {(['rectangle', 'triangle', 'diamond', 'line', 'image'].includes(type)) && (
         <Section title="Edges">
           {(['sharp', 'round'] as const).map(e => (
             <button
