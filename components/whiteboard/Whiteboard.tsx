@@ -6,7 +6,7 @@ import { Toolbar, Tool } from './Toolbar';
 import { PropertiesPanel } from './PropertiesPanel';
 import { db, WhiteboardElement } from '@/lib/db';
 import { useHistoryState } from '@/lib/useHistoryState';
-import { Plus, Minus, Undo2, Redo2 } from 'lucide-react';
+import { Plus, Minus, Undo2, Redo2, ShieldCheck, HelpCircle } from 'lucide-react';
 
 const Canvas = dynamic(() => import('./Canvas').then((mod) => mod.Canvas), {
   ssr: false,
@@ -224,6 +224,22 @@ export default function Whiteboard() {
             <Redo2 size={16} />
           </button>
         </div>
+      </div>
+
+      {/* Bottom Right Controls */}
+      <div className="fixed bottom-4 right-4 flex items-center gap-2 z-50">
+        <div 
+          className="flex items-center bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-green-600 cursor-help"
+          title="seus desenhos sao salvos em seu proprio navegador, eles nao sao mandados para nossos servidores"
+        >
+          <ShieldCheck size={20} />
+        </div>
+        <button 
+          className="flex items-center bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-gray-600 hover:bg-gray-100 transition-colors"
+          title="Help?"
+        >
+          <HelpCircle size={20} />
+        </button>
       </div>
     </div>
   );
