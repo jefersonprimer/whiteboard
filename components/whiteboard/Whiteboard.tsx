@@ -68,14 +68,14 @@ export default function Whiteboard() {
     const savedZoom = localStorage.getItem('whiteboard-zoom');
     const savedPosition = localStorage.getItem('whiteboard-position');
     const savedBackground = localStorage.getItem('whiteboard-background');
-    
+
     if (savedZoom) {
       const zoomValue = parseFloat(savedZoom);
       if (!isNaN(zoomValue) && zoomValue >= 0.1 && zoomValue <= 5) {
         setZoom(zoomValue);
       }
     }
-    
+
     if (savedPosition) {
       try {
         const position = JSON.parse(savedPosition);
@@ -164,11 +164,11 @@ export default function Whiteboard() {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check if we are in an input or textarea
       const target = e.target as HTMLElement;
-      const isInput = target.tagName === 'TEXTAREA' || 
-                      target.tagName === 'INPUT' || 
-                      target.isContentEditable ||
-                      document.getElementById('whiteboard-textarea');
-      
+      const isInput = target.tagName === 'TEXTAREA' ||
+        target.tagName === 'INPUT' ||
+        target.isContentEditable ||
+        document.getElementById('whiteboard-textarea');
+
       if (isInput) return;
 
       const key = e.key.toLowerCase();
@@ -179,7 +179,7 @@ export default function Whiteboard() {
       if (isCtrl && key === 'z' && !isShift) {
         e.preventDefault();
         undo();
-      } 
+      }
       // Redo: Ctrl+Y, Ctrl+Shift+Z, or Ctrl+R
       else if (isCtrl && (key === 'y' || (key === 'z' && isShift) || key === 'r')) {
         e.preventDefault();
@@ -238,7 +238,7 @@ export default function Whiteboard() {
           const pts = el.points;
           const out: number[] = [];
           for (let i = 0; i < targetN; i++) {
-            const t = targetN === 1 ? 1 : i / (targetN - 1);
+            const t = i / (targetN - 1);
             const idx = t * (currentN - 1);
             const lo = Math.floor(idx);
             const hi = Math.min(lo + 1, currentN - 1);
@@ -258,10 +258,10 @@ export default function Whiteboard() {
 
   const handleLayerChange = useCallback(async (action: 'front' | 'back' | 'forward' | 'backward') => {
     if (selectedIds.length === 0) return;
-    
+
     let newElements = [...elements];
     const selectedIndices = selectedIds.map(id => newElements.findIndex(el => el.id === id)).sort((a, b) => a - b);
-    
+
     if (action === 'front') {
       const selected = newElements.filter(el => selectedIds.includes(el.id));
       const remaining = newElements.filter(el => !selectedIds.includes(el.id));
@@ -312,22 +312,21 @@ export default function Whiteboard() {
       </div>
 
       {/* Sidebar Overlay and Sidebar */}
-      <div 
+      <div
         className={`fixed inset-0 z-[90] transition-opacity duration-200 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       >
-        <div 
-          className="absolute inset-0 bg-transparent" 
+        <div
+          className="absolute inset-0 bg-transparent"
           onClick={() => setIsSidebarOpen(false)}
         />
-        <div 
+        <div
           ref={sidebarRef}
-          className={`absolute top-16 left-4  transition-all duration-200 ease-out origin-top-left ${
-            isSidebarOpen 
-              ? 'opacity-100 scale-100 translate-y-0' 
+          className={`absolute top-16 left-4  transition-all duration-200 ease-out origin-top-left ${isSidebarOpen
+              ? 'opacity-100 scale-100 translate-y-0'
               : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
-          }`}
+            }`}
         >
-          <Sidebar 
+          <Sidebar
             onOpenClick={() => setIsOpenModalOpen(true)}
             onSaveClick={() => setIsSaveModalOpen(true)}
             onResetCanvas={handleClearCanvas}
@@ -360,16 +359,16 @@ export default function Whiteboard() {
         onClose={() => setIsShortcutsModalOpen(false)}
       />
 
-      <Toolbar 
-        activeTool={activeTool} 
-        setActiveTool={setActiveTool} 
+      <Toolbar
+        activeTool={activeTool}
+        setActiveTool={setActiveTool}
         onClearCanvas={handleClearCanvas}
         onImageUpload={handleImageUpload}
         onHelpClick={() => setIsShortcutsModalOpen(true)}
       />
-      <Canvas 
-        activeTool={activeTool} 
-        elements={elements} 
+      <Canvas
+        activeTool={activeTool}
+        elements={elements}
         setElements={setElements}
         saveHistory={saveHistory}
         undo={undo}
@@ -383,7 +382,7 @@ export default function Whiteboard() {
         canvasBackground={canvasBackground}
       />
       {selectedIds.length > 0 && (
-        <PropertiesPanel 
+        <PropertiesPanel
           activeTool={activeTool}
           selectedElements={selectedElements}
           updateElements={updateElements}
@@ -437,13 +436,13 @@ export default function Whiteboard() {
 
       {/* Bottom Right Controls */}
       <div className="fixed bottom-4 right-4 flex items-center gap-2 z-50">
-        <div 
+        <div
           className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-2 text-green-600 cursor-help"
           title="seus desenhos sao salvos em seu proprio navegador, eles nao sao mandados para nossos servidores"
         >
           <ShieldCheck size={20} />
         </div>
-        <button 
+        <button
           onClick={() => setIsShortcutsModalOpen(true)}
           className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-2 text-gray-600 dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
           title="Shortcuts (?)"

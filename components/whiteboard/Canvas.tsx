@@ -428,8 +428,8 @@ export const Canvas: React.FC<CanvasProps> = ({
     textarea.style.fontFamily = defaultProps.fontFamily || 'Sans-serif';
     textarea.style.fontWeight = '400';
     textarea.style.color = defaultProps.stroke || (isDark ? DEFAULT_STROKE_DARK : DEFAULT_STROKE_LIGHT);
-    textarea.style.webkitFontSmoothing = 'antialiased';
-    textarea.style.mozOsxFontSmoothing = 'grayscale';
+    (textarea.style as any).webkitFontSmoothing = 'antialiased';
+    (textarea.style as any).mozOsxFontSmoothing = 'grayscale';
 
     textarea.style.boxSizing = 'border-box';
     textarea.style.outline = 'none';
@@ -717,7 +717,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         const [x1, y1, x2, y2] = finalElement.points;
         const out: number[] = [];
         for (let i = 0; i < n; i++) {
-          const t = n === 1 ? 1 : i / (n - 1);
+          const t = i / (n - 1);
           out.push(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t);
         }
         finalElement.points = out;
