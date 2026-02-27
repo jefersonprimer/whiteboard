@@ -1,8 +1,5 @@
 'use client';
 
-import React from 'react';
-import { X } from 'lucide-react';
-
 interface ShortcutsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -42,12 +39,6 @@ export function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps) {
           <h2 className="text-lg font-semibold text-[#1b1b1f] dark:text-white">
             Keyboard Shortcuts
           </h2>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 transition-colors"
-          >
-            <X size={20} />
-          </button>
         </div>
         <div className="p-6 space-y-2 max-h-[60vh] overflow-y-auto">
           {shortcuts.map(({ key, action }) => (

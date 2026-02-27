@@ -18,6 +18,7 @@ interface ToolbarProps {
   onHelpClick?: () => void;
   activeExtraTool: ExtraTool;
   setActiveExtraTool: (tool: ExtraTool) => void;
+  onToolClick?: (tool: Tool) => void;
 }
 
 // Shortcut mapping: key -> tool (t=text, g=triangle/triângulo to avoid conflict)
@@ -126,7 +127,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onImageUpload,
   onHelpClick,
   activeExtraTool,
-  setActiveExtraTool
+  setActiveExtraTool,
+  onToolClick,
 }) => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const lastCKeyRef = React.useRef<number>(0);
@@ -200,6 +202,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   };
 
   const handleClick = (toolId: Tool) => {
+    onToolClick?.(toolId);
     if (toolId === 'image') {
       fileInputRef.current?.click();
     } else {

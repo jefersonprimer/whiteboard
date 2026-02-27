@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import dynamic from 'next/dynamic';
 import { Toolbar, Tool, ExtraTool } from './Toolbar';
 import { PropertiesPanel } from './PropertiesPanel';
@@ -27,6 +28,8 @@ const Canvas = dynamic(() => import('./Canvas').then((mod) => mod.Canvas), {
 export default function Whiteboard() {
   const [activeTool, setActiveTool] = useState<Tool>('select');
   const [activeExtraTool, setActiveExtraTool] = useState<ExtraTool>('none');
+  const [clickTooltipTool, setClickTooltipTool] = useState<Tool | null>(null);
+  
   const { elements, setElements, saveHistory, undo, redo, canUndo, canRedo } = useHistoryState([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -71,6 +74,39 @@ export default function Whiteboard() {
   const { resolvedTheme, mounted } = useTheme();
   const LIGHT_BG = ['bg-white', 'bg-gray-50', 'bg-neutral-100', 'bg-neutral-200', 'bg-neutral-300', 'bg-yellow-100'];
   const DARK_BG = ['bg-neutral-900', 'bg-gray-800', 'bg-slate-900', 'bg-zinc-900', 'bg-gray-950', 'bg-stone-950'];
+
+  const TOOL_CLICK_TOOLTIP: Partial<Record<Tool, React.ReactNode>> = {
+    select: (
+      <>
+        To move canvas, hold <span className="p-0.5 border rounded">Scrool wheel</span> or{' '}
+        <span className="p-0.5 border rounded">Space</span> while dragging, or use the hand tool.
+      </>
+    ),
+    arrow: (
+      <>
+        Click to start multiple points, drag for single line. Press{' '}
+        <span className="p-0.5 border rounded">A</span> again to change arrow type.
+      </>
+    ),
+    line: <>Click to start mulple points, drag for single line.</>,
+    pencil: <>Click and drag, release when you are finished.</>,
+    text: <>Tip: you can also add text by double-clicking anywhere with the select tool.</>,
+    eraser: (
+      <>
+        Hold <span className="p-0.5 border rounded">Alt</span> to revert the elements marked for deletion.
+      </>
+    ),
+  };
+
+  const handleToolbarToolClick = useCallback((tool: Tool) => {
+    setClickTooltipTool(TOOL_CLICK_TOOLTIP[tool] ? tool : null);
+  }, []);
+
+  useEffect(() => {
+    if (clickTooltipTool !== null && clickTooltipTool !== activeTool) {
+      setClickTooltipTool(null);
+    }
+  }, [activeTool]);
 
   // Load saved view state from localStorage (zoom/position)
   useEffect(() => {
@@ -445,7 +481,20 @@ export default function Whiteboard() {
         onHelpClick={() => setIsShortcutsModalOpen(true)}
         activeExtraTool={activeExtraTool}
         setActiveExtraTool={setActiveExtraTool}
+        onToolClick={handleToolbarToolClick}
       />
+      {clickTooltipTool !== null &&
+        clickTooltipTool === activeTool &&
+        TOOL_CLICK_TOOLTIP[clickTooltipTool] &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[min(900px,calc(100vw-2rem))] pointer-events-none">
+            <div className="text-xs text-gray-700 dark:text-neutral-200 text-center opacity-60">
+              {TOOL_CLICK_TOOLTIP[clickTooltipTool]}
+            </div>
+          </div>,
+          document.body
+        )}
       <Canvas
         activeTool={activeTool}
         extraTool={activeExtraTool}
@@ -518,7 +567,7 @@ export default function Whiteboard() {
       {/* Bottom Right Controls */}
       <div className="fixed bottom-4 right-4 flex items-center gap-2 z-50">
         <div
-          className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-2 text-[#6965db] dark:text-[#a8a5ff] cursor-help"
+          className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-2 text-blue-400 cursor-help"
           title="seus desenhos sao salvos em seu proprio navegador, eles nao sao mandados para nossos servidores"
         >
           <ShieldCheck size={20} />
