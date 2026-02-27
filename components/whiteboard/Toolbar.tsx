@@ -233,7 +233,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             key={tool.id}
             onClick={() => handleClick(tool.id)}
             className={`relative p-2 rounded-md transition-colors shrink-0 ${activeTool === tool.id && !tool.isAction && activeExtraTool === 'none'
-                ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'
+                ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-400'
                 : tool.isAction
                   ? 'hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-600 dark:text-neutral-400 hover:text-red-500 dark:hover:text-red-400'
                   : 'hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-neutral-300'

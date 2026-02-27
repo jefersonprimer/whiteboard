@@ -255,10 +255,10 @@ export default function LibrarySidebar({ onClose }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-800 shrink-0">
         <div className="flex items-center gap-2">
-          <BookOpen size={16} className="text-indigo-500" />
+          <BookOpen size={16} className="text-blue-500" />
           <span className="text-sm font-semibold text-gray-900 dark:text-white">Library</span>
           {items.length > 0 && (
-            <span className="text-xs bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded-full font-medium">
+            <span className="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-600 px-1.5 py-0.5 rounded-full font-medium">
               {items.length}
             </span>
           )}
@@ -284,7 +284,7 @@ export default function LibrarySidebar({ onClose }: Props) {
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={importing}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-sm font-medium transition-colors border border-indigo-200 dark:border-indigo-800 disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium transition-colors border border-blue-200 dark:border-blue-800 disabled:opacity-50"
         >
           <Upload size={15} />
           {importing ? 'Importing…' : 'Import .excalidrawlib'}
@@ -314,7 +314,7 @@ export default function LibrarySidebar({ onClose }: Props) {
             {items.map(item => (
               <div
                 key={item.id}
-                className="group relative rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/60 overflow-hidden cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-600 hover:shadow-md transition-all"
+                className="group relative rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/60 overflow-hidden cursor-pointer hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-md transition-all"
                 onClick={() => handleInsert(item)}
                 title={`Insert "${item.name}"`}
               >

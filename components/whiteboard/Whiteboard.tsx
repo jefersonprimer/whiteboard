@@ -315,8 +315,13 @@ export default function Whiteboard() {
     }
   }, [resolvedTheme]);
 
+  const isTailwindBackground = canvasBackground.startsWith('bg-');
+
   return (
-    <div className={`relative w-full h-screen ${canvasBackground} overflow-hidden`}>
+    <div
+      className={`relative w-full h-screen overflow-hidden ${isTailwindBackground ? canvasBackground : ''}`}
+      style={!isTailwindBackground ? { backgroundColor: canvasBackground } : undefined}
+    >
       {/* Menu Button */}
       <div className="fixed top-4 left-4 z-[100]">
         <button
@@ -338,7 +343,7 @@ export default function Whiteboard() {
             setShareLink(getShareableLink(elements));
             setIsShareLinkModalOpen(true);
           }}
-          className="p-2 bg-[#6965db] hover:bg-[#5b57d1] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg text-white transition-all active:scale-95"
+          className="p-2 bg-blue-400 hover:bg-blue-500 border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg text-white transition-all active:scale-95"
           title="Share"
         >
           <Share2 size={20} />

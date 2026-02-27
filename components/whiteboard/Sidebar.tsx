@@ -1,5 +1,7 @@
 'use client';
 
+import React, { useRef, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   FolderOpen,
   Save,
@@ -29,6 +31,27 @@ type SidebarProps = {
   canvasBackground?: string;
   onCanvasBackgroundChange?: (color: string) => void;
   onLiveCollaborationClick?: () => void;
+}
+
+const BG_CLASS_TO_COLOR: Record<string, string> = {
+  "bg-white": "#ffffff",
+  "bg-gray-50": "#f9fafb",
+  "bg-neutral-100": "#f5f5f5",
+  "bg-neutral-200": "#e5e5e5",
+  "bg-neutral-300": "#d4d4d4",
+  "bg-yellow-100": "#fef9c3",
+  "bg-neutral-900": "#171717",
+  "bg-gray-800": "#1f2937",
+  "bg-slate-900": "#0f172a",
+  "bg-zinc-900": "#18181b",
+  "bg-gray-950": "#020617",
+  "bg-stone-950": "#0c0a09",
+};
+
+function resolveBackgroundColor(value: string): string {
+  if (BG_CLASS_TO_COLOR[value]) return BG_CLASS_TO_COLOR[value];
+  // Fallback: assume it's already a CSS color value (e.g. #rrggbb)
+  return value || "#f9fafb";
 }
 
 export default function Sidebar({ onOpenClick, onSaveClick, onResetCanvas, canvasBackground = 'bg-gray-50', onCanvasBackgroundChange, onLiveCollaborationClick }: SidebarProps) {
@@ -108,7 +131,13 @@ export default function Sidebar({ onOpenClick, onSaveClick, onResetCanvas, canva
 
         {/* Canvas background */}
         <div className="px-2">
-          <p className="text-xs text-[#1b1b1f] dark:text-white mb-2">{t('canvasBackground')}</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-[#1b1b1f] dark:text-white">{t('canvasBackground')}</p>
+            <BackgroundColorPicker
+              activeColor={resolveBackgroundColor(canvasBackground)}
+              onChangeColor={(color) => onCanvasBackgroundChange?.(color)}
+            />
+          </div>
           {mounted && resolvedTheme === 'light' ? (
             <div className="flex gap-2 flex-wrap">
               <ColorSwatch color="bg-white" active={canvasBackground === 'bg-white'} onClick={() => onCanvasBackgroundChange?.('bg-white')} />
@@ -158,7 +187,7 @@ function MenuItem({ icon, label, shortcut, highlight, isResetCanvas, onClick }: 
       className={`
         flex items-center justify-between p-2 rounded-md cursor-pointer
         hover:bg-neutral-100 dark:hover:bg-neutral-800 text-[#1b1b1f] dark:text-white
-        ${highlight ? "text-[#6965db] dark:text-[#6965db] font-bold" : ""}
+        ${highlight ? "text-blue-400 font-bold" : ""}
         ${isResetCanvas ? "hover:text-red-600 font-medium" : ""}
       `}
     >
@@ -204,11 +233,117 @@ function ColorSwatch({ color, active, onClick }: { color: string; active?: boole
       className={`
         w-6 h-6 rounded-md border cursor-pointer transition-all
         ${color}
-        ${active ? "border-purple-600 ring-2 ring-purple-500" : "border-neutral-300 dark:border-neutral-700"}
+        ${active ? "border-blue-400 ring-1 ring-blue-400" : "border-neutral-300 dark:border-neutral-700"}
         ${onClick ? "hover:scale-110" : ""}
       `}
     />
   )
+}
+
+type BackgroundColorPickerProps = {
+  activeColor: string;
+  onChangeColor?: (color: string) => void;
+};
+
+function BackgroundColorPicker({ activeColor, onChangeColor }: BackgroundColorPickerProps) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(activeColor);
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setValue(activeColor);
+  }, [activeColor]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (buttonRef.current?.contains(target)) return;
+      if (popoverRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const PRESET_COLORS = [
+    "#ffffff",
+    "#f9fafb",
+    "#e5e5e5",
+    "#d4d4d4",
+    "#fef9c3",
+    "#0f172a",
+    "#111827",
+    "#18181b",
+    "#020617",
+    "#0c0a09",
+  ];
+
+  const handlePick = (color: string) => {
+    setValue(color);
+    onChangeColor?.(color);
+  };
+
+  const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setValue(val);
+    if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(val)) {
+      onChangeColor?.(val);
+    }
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        ref={buttonRef}
+        onClick={() => {
+          if (!buttonRef.current) return;
+          const rect = buttonRef.current.getBoundingClientRect();
+          setAnchorRect(rect);
+          setOpen((v) => !v);
+        }}
+        className="w-7 h-7 rounded-full border border-neutral-300 dark:border-neutral-700 flex items-center justify-center shadow-sm hover:shadow-md transition-all hover:scale-105"
+        style={{ backgroundColor: activeColor }}
+        title="Escolher qualquer cor de fundo"
+      />
+      {open && anchorRect && typeof document !== "undefined" &&
+        createPortal(
+          <div
+            ref={popoverRef}
+            className="fixed z-[9999] rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-[#1C1C1C] shadow-lg p-2 w-40"
+            style={{
+              top: anchorRect.top + anchorRect.height / 2,
+              left: anchorRect.right + 8,
+              transform: "translateY(-50%)",
+            }}
+          >
+            <div className="grid grid-cols-5 gap-1 mb-2">
+              {PRESET_COLORS.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => handlePick(color)}
+                  className="w-6 h-6 rounded border border-neutral-200 dark:border-neutral-700 hover:scale-110 transition-transform"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+            <input
+              type="text"
+              value={value}
+              onChange={handleHexChange}
+              placeholder="#rrggbb"
+              className="w-full px-2 py-1 text-xs rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-[#1b1b1f] dark:text-white outline-none focus:ring-1 focus:ring-blue-400"
+            />
+          </div>,
+          document.body
+        )}
+    </>
+  );
 }
 
 function Divider() {

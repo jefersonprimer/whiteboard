@@ -53,7 +53,7 @@ export function ShareLinkModal({ isOpen, onClose, link }: ShareLinkModalProps) {
             />
             <button
               onClick={handleCopy}
-              className="shrink-0 px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-sm font-medium text-[#1b1b1f] dark:text-white flex items-center gap-2 transition-colors"
+              className="shrink-0 px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-blue-400 hover:bg-blue-500 text-sm font-medium text-white flex items-center gap-2 transition-colors"
             >
               {copied ? <Check size={16} /> : <Copy size={16} />}
               {copied ? 'Copied' : 'Copy'}

@@ -1,6 +1,6 @@
 'use client';
 
-import { Play, Users, Lock } from "lucide-react";
+import { Play, Users, Lock, LockKeyhole } from "lucide-react";
 
 type Props = {
     isOpen: boolean;
@@ -23,24 +23,25 @@ export default function LiveCollaborationModal({ isOpen, onClose }: Props) {
             >
                 {/* Header */}
                 <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-semibold text-[#6965db]">Live Collaboration</h2>
+                    <h2 className="text-xl font-semibold text-blue-400">Live Collaboration</h2>
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-neutral-500 dark:text-[#e3e3e8] leading-relaxed">
+                <p className="text-base text-[#1b1b1f] dark:text-[#e3e3e8] leading-relaxed">
                     Invite people to collaborate on your drawing in real time.
                 </p>
 
                 {/* E2E note */}
                 <div className="flex items-start gap-2 bg-neutral-50 dark:bg-neutral-800 rounded-xl p-3">
-                    <p className="text-xs text-[#1b1b1f] dark:text-[#e3e3e8]">
-                        The session is end-to-end encrypted and fully private. Not even our servers can see what you draw.
+                    <p className="flex items-center gap-2 text-center text-sm text-[#1b1b1f] dark:text-[#e3e3e8]">
+                        <LockKeyhole size={16}/>
+                        The session is end-to-end encrypted and fully private.
                     </p>
                 </div>
 
                 {/* Action */}
                 <button
-                    className="flex items-center justify-center gap-2 bg-[#6965db] hover:bg-[#6965db]/80 active:scale-95 transition text-white dark:text-[#121212] font-medium rounded-md w-40 px-5 py-3 text-sm"
+                    className="flex items-center justify-center gap-2 bg-blue-400 hover:bg-blue-500 active:scale-95 transition text-white dark:text-[#121212] font-medium rounded-md w-40 px-5 py-3 text-sm"
                 >
                     <Play size={16} />
                     Start session
