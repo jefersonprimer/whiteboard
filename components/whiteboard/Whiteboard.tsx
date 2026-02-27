@@ -15,6 +15,7 @@ import { OpenModal } from './OpenModal';
 import { ClearCanvasModal } from './ClearCanvasModal';
 import { ShortcutsModal } from './ShortcutsModal';
 import LiveCollaborationModal from './LiveCollaborationModal';
+import LibrarySidebar from './LibrarySidebar';
 import { ShareLinkModal } from './ShareLinkModal';
 
 import { getElementsFromHash, getShareableLink } from '@/lib/fileService';
@@ -38,6 +39,7 @@ export default function Whiteboard() {
   const [isClearCanvasModalOpen, setIsClearCanvasModalOpen] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [isLiveCollaborationModalOpen, setIsLiveCollaborationModalOpen] = useState(false);
+  const [isLibrarySidebarOpen, setIsLibrarySidebarOpen] = useState(false);
   const [isShareLinkModalOpen, setIsShareLinkModalOpen] = useState(false);
   const [shareLink, setShareLink] = useState('');
   const [elementsFromHash, setElementsFromHash] = useState<WhiteboardElement[] | null>(null);
@@ -316,10 +318,13 @@ export default function Whiteboard() {
   return (
     <div className={`relative w-full h-screen ${canvasBackground} overflow-hidden`}>
       {/* Menu Button */}
-      <div className="fixed top-4 left-4 z-100">
+      <div className="fixed top-4 left-4 z-[100]">
         <button
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-2.5 bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-white transition-all active:scale-95"
+          onClick={() => {
+            setIsSidebarOpen((v) => !v);
+            setIsLibrarySidebarOpen(false);
+          }}
+          className="p-2 bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-white transition-all active:scale-95"
           title="Menu"
         >
           {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
@@ -327,21 +332,25 @@ export default function Whiteboard() {
       </div>
 
 
-      <div className="fixed top-4 right-4 z-100 space-x-2">
+      <div className="fixed top-4 right-4 z-[100] space-x-2">
         <button
           onClick={() => {
             setShareLink(getShareableLink(elements));
             setIsShareLinkModalOpen(true);
           }}
-          className="p-2.5 bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-white transition-all active:scale-95"
+          className="p-2 bg-[#6965db] hover:bg-[#5b57d1] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg text-white transition-all active:scale-95"
           title="Share"
         >
           <Share2 size={20} />
         </button>
 
         <button
-          className="p-2.5 bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-white transition-all active:scale-95"
-          title="Libary"
+          onClick={() => {
+            setIsLibrarySidebarOpen((v) => !v);
+            setIsSidebarOpen(false);
+          }}
+          className="p-2 bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-white transition-all active:scale-95"
+          title="Library"
         >
           <PanelRight size={20} />
         </button>
@@ -349,7 +358,7 @@ export default function Whiteboard() {
 
       {/* Sidebar Overlay and Sidebar */}
       <div
-        className={`fixed inset-0 z-90 transition-opacity duration-200 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 z-[90] transition-opacity duration-200 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       >
         <div
           className="absolute inset-0 bg-transparent"
@@ -370,6 +379,24 @@ export default function Whiteboard() {
             onCanvasBackgroundChange={handleCanvasBackgroundChange}
             onLiveCollaborationClick={() => setIsLiveCollaborationModalOpen(true)}
           />
+        </div>
+      </div>
+
+      {/* Library Sidebar Overlay and Sidebar */}
+      <div
+        className={`fixed inset-0 z-[90] transition-opacity duration-200 ${isLibrarySidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      >
+        <div
+          className="absolute inset-0 bg-transparent"
+          onClick={() => setIsLibrarySidebarOpen(false)}
+        />
+        <div
+          className={`absolute top-16 right-4 transition-all duration-200 ease-out origin-top-right ${isLibrarySidebarOpen
+            ? 'opacity-100 scale-100 translate-y-0'
+            : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+            }`}
+        >
+          <LibrarySidebar onClose={() => setIsLibrarySidebarOpen(false)} />
         </div>
       </div>
 
@@ -486,7 +513,7 @@ export default function Whiteboard() {
       {/* Bottom Right Controls */}
       <div className="fixed bottom-4 right-4 flex items-center gap-2 z-50">
         <div
-          className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-2 text-green-600 cursor-help"
+          className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-2 text-[#6965db] dark:text-[#a8a5ff] cursor-help"
           title="seus desenhos sao salvos em seu proprio navegador, eles nao sao mandados para nossos servidores"
         >
           <ShieldCheck size={20} />

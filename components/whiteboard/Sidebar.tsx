@@ -44,10 +44,10 @@ export default function Sidebar({ onOpenClick, onSaveClick, onResetCanvas, canva
   };
 
   return (
-    <div className="w-68 max-h-[calc(100vh-80px)] bg-white dark:bg-[#1C1C1C] border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 flex flex-col text-sm overflow-y-auto shadow-2xl">
+    <div className="w-64 max-h-[calc(100vh-80px)] bg-white dark:bg-[#1C1C1C] border border-neutral-200 dark:border-neutral-800 rounded-xl p-2 flex flex-col text-sm overflow-y-auto shadow-2xl">
 
       {/* Top Section */}
-      <div className="space-y-1">
+      <div className="my-1">
 
         <MenuItem icon={<FolderOpen size={16} />} label={t('open')} shortcut="Ctrl+O" onClick={onOpenClick} />
         <MenuItem icon={<Save size={16} />} label={t('saveTo')} onClick={onSaveClick} />
@@ -63,7 +63,7 @@ export default function Sidebar({ onOpenClick, onSaveClick, onResetCanvas, canva
       <Divider />
 
       {/* Links */}
-      <div className="space-y-1">
+      <div>
         <MenuItem icon={<ImageIcon size={16} />} label={t('excalidrawPlus')} />
         <MenuItem icon={<Github size={16} />} label={t('github')} />
         <MenuItem icon={<Twitter size={16} />} label={t('followUs')} />
@@ -156,9 +156,9 @@ function MenuItem({ icon, label, shortcut, highlight, isResetCanvas, onClick }: 
     <div
       onClick={onClick}
       className={`
-        flex items-center justify-between px-2 py-2 rounded-md cursor-pointer
+        flex items-center justify-between p-2 rounded-md cursor-pointer
         hover:bg-neutral-100 dark:hover:bg-neutral-800 text-[#1b1b1f] dark:text-white
-        ${highlight ? "text-blue-400 font-medium" : ""}
+        ${highlight ? "text-[#6965db] dark:text-[#6965db] font-bold" : ""}
         ${isResetCanvas ? "hover:text-red-600 font-medium" : ""}
       `}
     >
@@ -202,7 +202,7 @@ function ColorSwatch({ color, active, onClick }: { color: string; active?: boole
     <div
       onClick={onClick}
       className={`
-        w-8 h-8 rounded-md border cursor-pointer transition-all
+        w-6 h-6 rounded-md border cursor-pointer transition-all
         ${color}
         ${active ? "border-purple-600 ring-2 ring-purple-500" : "border-neutral-300 dark:border-neutral-700"}
         ${onClick ? "hover:scale-110" : ""}

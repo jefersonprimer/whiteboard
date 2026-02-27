@@ -538,6 +538,55 @@ export const Canvas: React.FC<CanvasProps> = ({
     return () => window.removeEventListener('add-image', handleAddImage);
   }, [saveHistory, setSelectedIds, defaultProps]);
 
+  // Handle library items inserted from LibrarySidebar
+  useEffect(() => {
+    const handleAddLibraryItems = (e: any) => {
+      const { elements: newEls } = e.detail as { elements: WhiteboardElement[] };
+      if (!newEls?.length) return;
+
+      // Re-centre the group around the current viewport centre
+      const stage = stageRef.current;
+      if (stage) {
+        const vw = stage.width();
+        const vh = stage.height();
+        const transform = stage.getAbsoluteTransform().copy();
+        transform.invert();
+        const stageCenter = transform.point({ x: vw / 2, y: vh / 2 });
+
+        // Bounding box of incoming elements
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (const el of newEls) {
+          minX = Math.min(minX, el.x);
+          minY = Math.min(minY, el.y);
+          maxX = Math.max(maxX, el.x + (el.width ?? 0));
+          maxY = Math.max(maxY, el.y + (el.height ?? 0));
+        }
+        const gx = (minX + maxX) / 2;
+        const gy = (minY + maxY) / 2;
+        const dx = stageCenter.x - gx;
+        const dy = stageCenter.y - gy;
+
+        const repositioned = newEls.map(el => ({
+          ...el,
+          x: el.x + dx,
+          y: el.y + dy,
+          ...(el.points
+            ? { points: el.points.map((p, i) => (i % 2 === 0 ? p + dx : p + dy)) }
+            : {}),
+        }));
+
+        saveHistory([...elementsRef.current, ...repositioned]);
+        setSelectedIds(repositioned.map(el => el.id));
+      } else {
+        saveHistory([...elementsRef.current, ...newEls]);
+        setSelectedIds(newEls.map(el => el.id));
+      }
+    };
+
+    window.addEventListener('add-library-items', handleAddLibraryItems);
+    return () => window.removeEventListener('add-library-items', handleAddLibraryItems);
+  }, [saveHistory, setSelectedIds]);
+
   const getRelativePointerPosition = (stage: Konva.Stage) => {
     const transform = stage.getAbsoluteTransform().copy();
     transform.invert();
@@ -1073,7 +1122,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         rotation: node.rotation(),
       };
 
-      if (element.type === 'rectangle' || element.type === 'text' || element.type === 'image' || element.type === 'web-embed') {
+      if (element.type === 'rectangle' || element.type === 'text' || element.type === 'image') {
         const newWidth = node.width() * node.scaleX();
         const newHeight = node.height() * node.scaleY();
         updatedElement.width = newWidth;
@@ -1092,6 +1141,22 @@ export const Canvas: React.FC<CanvasProps> = ({
         // Update node immediately so it doesn't snap back to old size before re-render
         node.width(newWidth);
         node.height(newHeight);
+        node.scaleX(1);
+        node.scaleY(1);
+      } else if (element.type === 'web-embed') {
+        // For web-embed we transform the Group, which doesn't have an intrinsic width/height.
+        // Use the element's own width/height as the base and apply the node scale.
+        const baseWidth = element.width ?? 400;
+        const baseHeight = element.height ?? 250;
+        const scaleX = node.scaleX();
+        const scaleY = node.scaleY();
+        const newWidth = Math.max(40, baseWidth * scaleX);
+        const newHeight = Math.max(40, baseHeight * scaleY);
+
+        updatedElement.width = newWidth;
+        updatedElement.height = newHeight;
+
+        // Reset scale so future transforms work from the new width/height
         node.scaleX(1);
         node.scaleY(1);
       } else if (element.type === 'circle') {
