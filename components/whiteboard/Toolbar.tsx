@@ -272,14 +272,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </button>
         <button
           onClick={handleThemeToggle}
-          className="p-2 rounded-md transition-colors text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
+          className="hidden md:flex p-2 rounded-md transition-colors text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
           title={resolvedTheme === 'dark' ? 'Light mode - Ctrl+L' : 'Dark mode - Ctrl+D'}
         >
           {resolvedTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </button>
         <button
           onClick={onClearCanvas}
-          className="p-2 rounded-md transition-colors text-gray-600 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-500 dark:hover:text-red-400"
+          className="hidden md:flex p-2 rounded-md transition-colors text-gray-600 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-500 dark:hover:text-red-400"
           title="Clear Canvas - CC"
         >
           <Trash2 size={18} />
