@@ -10,6 +10,9 @@ import useImage from 'use-image';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Pencil } from 'lucide-react';
 
+const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 5;
+
 function detectUrlType(url: string): 'image' | 'video' | 'youtube' | 'vimeo' | 'unknown' {
   const trimmedUrl = url.trim().toLowerCase();
 
@@ -486,6 +489,11 @@ export const Canvas: React.FC<CanvasProps> = ({
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
   const [interactingEmbedId, setInteractingEmbedId] = useState<string | null>(null);
   const [webEmbedUrlEdits, setWebEmbedUrlEdits] = useState<Record<string, string>>({});
+  const pinchGestureRef = useRef<{
+    initialDistance: number;
+    initialZoom: number;
+    worldPoint: { x: number; y: number };
+  } | null>(null);
 
   const elementsRef = useRef(elements);
   useEffect(() => {
@@ -593,6 +601,44 @@ export const Canvas: React.FC<CanvasProps> = ({
     const pos = stage.getPointerPosition();
     return pos ? transform.point(pos) : { x: 0, y: 0 };
   };
+
+  const getTouchDistance = (touches: TouchList) => {
+    if (touches.length < 2) return 0;
+    const [first, second] = [touches[0], touches[1]];
+    return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+  };
+
+  const getTouchCenter = (touches: TouchList) => {
+    if (touches.length < 2) return { x: 0, y: 0 };
+    const [first, second] = [touches[0], touches[1]];
+    return {
+      x: (first.clientX + second.clientX) / 2,
+      y: (first.clientY + second.clientY) / 2,
+    };
+  };
+
+  const updateZoomAtScreenPoint = useCallback((nextZoom: number, screenPoint: { x: number; y: number }) => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const oldScale = stage.scaleX();
+    const clampedScale = Math.min(Math.max(MIN_ZOOM, nextZoom), MAX_ZOOM);
+    const worldPoint = {
+      x: (screenPoint.x - stage.x()) / oldScale,
+      y: (screenPoint.y - stage.y()) / oldScale,
+    };
+
+    const newPos = {
+      x: screenPoint.x - worldPoint.x * clampedScale,
+      y: screenPoint.y - worldPoint.y * clampedScale,
+    };
+
+    stage.scale({ x: clampedScale, y: clampedScale });
+    stage.position(newPos);
+    stage.batchDraw();
+    window.dispatchEvent(new CustomEvent('update-zoom', { detail: { zoom: clampedScale } }));
+    setStagePosition(newPos);
+  }, [setStagePosition]);
 
   const handleEraser = useCallback(() => {
     const stage = stageRef.current;
@@ -754,6 +800,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   }, [defaultProps, saveHistory, setSelectedIds]);
 
   const handleMouseDown = useCallback((e: any) => {
+    if (pinchGestureRef.current) return;
     const stage = e.target.getStage();
     const pos = getRelativePointerPosition(stage);
 
@@ -935,6 +982,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   }, [activeTool, extraTool, defaultProps, handleTextInput, handleEraser, setSelectedIds, selectedIds, isDark, saveHistory]);
 
   const handleMouseMove = useCallback((e: any) => {
+    if (pinchGestureRef.current) return;
     const stage = e.target.getStage();
     const pos = getRelativePointerPosition(stage);
 
@@ -995,6 +1043,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   }, [activeTool, extraTool, isDrawing, isSelecting, handleEraser, isLaserActive, isLassoing, setElements]);
 
   const handleMouseUp = useCallback(async () => {
+    if (pinchGestureRef.current) return;
     if (extraTool === 'laser-pointer' && isLaserActive) {
       setIsLaserActive(false);
       if (laserTimeoutRef.current != null) {
@@ -1249,15 +1298,30 @@ export const Canvas: React.FC<CanvasProps> = ({
     }
   }, [saveHistory]);
 
-  const [stageSize, setStageSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1000,
-    height: typeof window !== 'undefined' ? window.innerHeight : 1000,
-  });
+  const getViewportSize = () => {
+    if (typeof window === 'undefined') {
+      return { width: 1000, height: 1000 };
+    }
+
+    const viewport = window.visualViewport;
+    return {
+      width: Math.round(viewport?.width ?? window.innerWidth),
+      height: Math.round(viewport?.height ?? window.innerHeight),
+    };
+  };
+
+  const [stageSize, setStageSize] = useState(getViewportSize);
 
   useEffect(() => {
-    const handleResize = () => setStageSize({ width: window.innerWidth, height: window.innerHeight });
+    const handleResize = () => setStageSize(getViewportSize());
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.visualViewport?.addEventListener('resize', handleResize);
+    window.visualViewport?.addEventListener('scroll', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.visualViewport?.removeEventListener('resize', handleResize);
+      window.visualViewport?.removeEventListener('scroll', handleResize);
+    };
   }, []);
 
   // Update stage position when stagePosition prop changes (but not during drag)
@@ -1317,25 +1381,93 @@ export const Canvas: React.FC<CanvasProps> = ({
 
         const scaleBy = 1.1;
         const newScale = e.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
-        const clampedScale = Math.min(Math.max(0.1, newScale), 5);
 
-        // Update zoom state in parent via a custom event since we can't easily call setZoom here
-        window.dispatchEvent(new CustomEvent('update-zoom', { detail: { zoom: clampedScale } }));
-
-        const newPos = {
-          x: pointer.x - mousePointTo.x * clampedScale,
-          y: pointer.y - mousePointTo.y * clampedScale,
-        };
-        stage.position(newPos);
-        // Save position after zoom
-        setStagePosition(newPos);
+        updateZoomAtScreenPoint(newScale, {
+          x: pointer.x,
+          y: pointer.y,
+        });
       }
     };
 
     const container = stageRef.current?.container();
     container?.addEventListener('wheel', handleWheel, { passive: false });
     return () => container?.removeEventListener('wheel', handleWheel);
-  }, [zoom, setStagePosition]);
+  }, [updateZoomAtScreenPoint, zoom]);
+
+  const handleTouchStart = useCallback((e: any) => {
+    const touchEvent = e.evt as TouchEvent;
+    if (touchEvent.touches.length >= 2) {
+      touchEvent.preventDefault();
+      const stage = e.target.getStage();
+      const center = getTouchCenter(touchEvent.touches);
+      const distance = getTouchDistance(touchEvent.touches);
+      const currentZoom = stage.scaleX();
+      pinchGestureRef.current = {
+        initialDistance: distance,
+        initialZoom: currentZoom,
+        worldPoint: {
+          x: (center.x - stage.x()) / currentZoom,
+          y: (center.y - stage.y()) / currentZoom,
+        },
+      };
+
+      if (isDrawing) {
+        setIsDrawing(false);
+        newElementRef.current = null;
+        setNewElement(null);
+      }
+      if (isSelecting) {
+        setIsSelecting(false);
+        setSelectionBox((prev) => ({ ...prev, visible: false }));
+      }
+      return;
+    }
+
+    handleMouseDown(e);
+  }, [handleMouseDown, isDrawing, isSelecting]);
+
+  const handleTouchMove = useCallback((e: any) => {
+    const touchEvent = e.evt as TouchEvent;
+    if (touchEvent.touches.length >= 2) {
+      touchEvent.preventDefault();
+      const stage = e.target.getStage();
+      const pinch = pinchGestureRef.current;
+      if (!pinch) return;
+
+      const center = getTouchCenter(touchEvent.touches);
+      const distance = getTouchDistance(touchEvent.touches);
+      if (!distance || !pinch.initialDistance) return;
+
+      const nextZoom = pinch.initialZoom * (distance / pinch.initialDistance);
+      const clampedScale = Math.min(Math.max(MIN_ZOOM, nextZoom), MAX_ZOOM);
+      const newPos = {
+        x: center.x - pinch.worldPoint.x * clampedScale,
+        y: center.y - pinch.worldPoint.y * clampedScale,
+      };
+
+      stage.scale({ x: clampedScale, y: clampedScale });
+      stage.position(newPos);
+      stage.batchDraw();
+      window.dispatchEvent(new CustomEvent('update-zoom', { detail: { zoom: clampedScale } }));
+      setStagePosition(newPos);
+      return;
+    }
+
+    handleMouseMove(e);
+  }, [handleMouseMove, setStagePosition]);
+
+  const handleTouchEnd = useCallback((e: any) => {
+    const touchEvent = e.evt as TouchEvent;
+    if (pinchGestureRef.current) {
+      touchEvent.preventDefault();
+      if (touchEvent.touches.length < 2) {
+        pinchGestureRef.current = null;
+      }
+      return;
+    }
+
+    handleMouseUp();
+  }, [handleMouseUp]);
 
   useEffect(() => {
     if (transformerRef.current) {
@@ -1589,10 +1721,11 @@ export const Canvas: React.FC<CanvasProps> = ({
   );
 
   return (
-    <div className={`w-full h-screen ${canvasBackground} overflow-hidden relative`}>
+    <div className={`w-full h-[100dvh] ${canvasBackground} overflow-hidden relative touch-none overscroll-none`}>
       <Stage
         width={stageSize.width} height={stageSize.height}
         onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}
+        onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}
         onDragStart={handleStageDragStart}
         onDragEnd={handleStageDragEnd}
         onDragMove={handleStageDragMove}
@@ -1607,7 +1740,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         scaleY={zoom}
         x={stagePosition.x}
         y={stagePosition.y}
-        style={{ cursor }}
+        style={{ cursor, touchAction: 'none' }}
       >
         <Layer>
           {elements.map((el) => {
@@ -2413,4 +2546,3 @@ export const Canvas: React.FC<CanvasProps> = ({
     </div>
   );
 };
-

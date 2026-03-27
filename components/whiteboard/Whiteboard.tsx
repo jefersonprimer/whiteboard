@@ -365,7 +365,7 @@ export default function Whiteboard() {
 
   return (
     <div
-      className={`relative w-full h-screen overflow-hidden ${isTailwindBackground ? canvasBackground : ''}`}
+      className={`relative w-full h-[100dvh] overflow-hidden touch-none ${isTailwindBackground ? canvasBackground : ''}`}
       style={!isTailwindBackground ? { backgroundColor: canvasBackground } : undefined}
     >
       {/* Menu Button */}
