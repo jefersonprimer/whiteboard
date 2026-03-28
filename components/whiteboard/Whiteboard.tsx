@@ -8,7 +8,8 @@ import { Toolbar, Tool, ExtraTool } from './Toolbar';
 import { PropertiesPanel } from './PropertiesPanel';
 import { db, WhiteboardElement } from '@/lib/db';
 import { useHistoryState } from '@/lib/useHistoryState';
-import { Plus, Minus, Undo2, Redo2, ShieldCheck, HelpCircle, Menu, X, Share2, PanelRight } from 'lucide-react';
+import { Plus, Minus, Undo2, Redo2, ShieldCheck, HelpCircle, Menu, X, Share2, PanelRight, Copy } from 'lucide-react';
+import { nanoid } from 'nanoid';
 import Sidebar from './Sidebar';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -267,6 +268,25 @@ export default function Whiteboard() {
     saveHistory(newElements);
   }, [saveHistory]);
 
+  const handleMobileDuplicateSelection = useCallback(() => {
+    if (selectedIds.length === 0) return;
+    const current = elementsRef.current;
+    const selected = current.filter((el) => selectedIds.includes(el.id));
+    if (selected.length === 0) return;
+    const offset = 20;
+    const duplicates = selected.map((el) => {
+      const clone = JSON.parse(JSON.stringify(el)) as WhiteboardElement;
+      return {
+        ...clone,
+        id: nanoid(),
+        x: clone.x + offset,
+        y: clone.y + offset,
+      };
+    });
+    saveHistory([...current, ...duplicates]);
+    setSelectedIds(duplicates.map((e) => e.id));
+  }, [selectedIds, saveHistory]);
+
   const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -383,7 +403,7 @@ export default function Whiteboard() {
       </div>
 
 
-      <div className="fixed top-4 right-4 z-100 space-x-2">
+      <div className="fixed flex items-center top-4 right-4 z-100 space-x-2">
         <button
           onClick={() => {
             setShareLink(getShareableLink(elements));
@@ -552,6 +572,18 @@ export default function Whiteboard() {
             <Plus size={16} />
           </button>
         </div>
+
+        {selectedIds.length > 0 && (
+          <button
+            type="button"
+            onClick={handleMobileDuplicateSelection}
+            className="md:hidden flex items-center justify-center p-2 bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg text-gray-600 dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors pointer-events-auto active:scale-95"
+            title={t('duplicateSelection')}
+            aria-label={t('duplicateSelection')}
+          >
+            <Copy size={16} />
+          </button>
+        )}
 
         {/* Undo/Redo Control */}
         <div className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-1 gap-1 pointer-events-auto">

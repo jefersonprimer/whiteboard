@@ -97,6 +97,7 @@
     "footerHint": "Pressione a tecla numérica ou letra para trocar de ferramenta rapidamente."
   },
   "Whiteboard": {
+    "duplicateSelection": "Copiar seleção (duplicar)",
     "toolClickTooltip": {
       "select": {
         "prefix": "Para mover o canvas, segure",
