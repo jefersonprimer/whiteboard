@@ -383,13 +383,13 @@ export default function Whiteboard() {
       </div>
 
 
-      <div className="fixed top-4 right-4 z-[100] space-x-2">
+      <div className="fixed top-4 right-4 z-100 space-x-2">
         <button
           onClick={() => {
             setShareLink(getShareableLink(elements));
             setIsShareLinkModalOpen(true);
           }}
-          className="p-2 bg-blue-400 hover:bg-blue-500 border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg text-white transition-all active:scale-95"
+          className="hidden md:flex p-2 bg-blue-400 hover:bg-blue-500 border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg text-white transition-all active:scale-95"
           title="Share"
         >
           <Share2 size={20} />
@@ -498,7 +498,7 @@ export default function Whiteboard() {
         TOOL_CLICK_TOOLTIP[clickTooltipTool] &&
         typeof document !== 'undefined' &&
         createPortal(
-          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[min(900px,calc(100vw-2rem))] pointer-events-none">
+          <div className="hidden md:block fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[min(900px,calc(100vw-2rem))] pointer-events-none">
             <div className="text-xs text-gray-700 dark:text-neutral-200 text-center opacity-60">
               {TOOL_CLICK_TOOLTIP[clickTooltipTool]}
             </div>
@@ -530,10 +530,10 @@ export default function Whiteboard() {
         />
       )}
 
-      {/* Bottom Left Controls */}
-      <div className="fixed bottom-20 md:bottom-4 left-4 flex items-center gap-2 z-50">
+      {/* Bottom Controls */}
+      <div className="fixed bottom-20 md:bottom-4 left-4 right-4 md:right-auto flex items-center justify-end md:justify-start gap-2 z-50 pointer-events-none">
         {/* Zoom Control */}
-        <div className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-1 gap-2">
+        <div className="hidden md:flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-1 gap-2 pointer-events-auto">
           <button
             onClick={() => setZoom(Math.max(0.1, zoom - 0.1))}
             className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-white transition-colors"
@@ -554,7 +554,7 @@ export default function Whiteboard() {
         </div>
 
         {/* Undo/Redo Control */}
-        <div className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-1 gap-1">
+        <div className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-1 gap-1 pointer-events-auto">
           <button
             onClick={undo}
             disabled={!canUndo}
@@ -574,8 +574,8 @@ export default function Whiteboard() {
         </div>
       </div>
 
-      {/* Bottom Right Controls */}
-      <div className="fixed bottom-20 md:bottom-4 right-4 flex items-center gap-2 z-50">
+      {/* Bottom Right Controls (Desktop Only) */}
+      <div className="fixed bottom-4 right-4 hidden md:flex items-center gap-2 z-50">
         <div
           className="flex items-center bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-2 text-blue-400 cursor-help"
           title="seus desenhos sao salvos em seu proprio navegador, eles nao sao mandados para nossos servidores"

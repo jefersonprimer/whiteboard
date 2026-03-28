@@ -67,7 +67,7 @@ export default function Sidebar({ onOpenClick, onSaveClick, onResetCanvas, canva
   };
 
   return (
-    <div className="w-70 max-h-[calc(100vh-80px)] bg-white dark:bg-[#1C1C1C] border border-neutral-200 dark:border-neutral-800 rounded-xl p-2 flex flex-col text-sm overflow-y-auto shadow-2xl">
+    <div className="w-60 md:70 max-h-[calc(100dvh-150px)] bg-white dark:bg-[#1C1C1C] border border-neutral-200 dark:border-neutral-800 rounded-xl p-2 flex flex-col text-sm overflow-y-auto shadow-2xl">
 
       {/* Top Section */}
       <div className="my-1">
@@ -202,7 +202,7 @@ function MenuItem({ icon, label, shortcut, highlight, isResetCanvas, onClick }: 
       </div>
 
       {shortcut && (
-        <span className="text-xs text-neutral-400">{shortcut}</span>
+        <span className="text-xs text-neutral-400 hidden lg:block">{shortcut}</span>
       )}
     </div>
   )

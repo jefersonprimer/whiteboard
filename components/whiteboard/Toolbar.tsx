@@ -48,6 +48,8 @@ const extraTools: { id: Exclude<ExtraTool, 'none'>; label: string; icon: React.R
   { id: 'lasso-selection', label: 'Lasso selection', icon: <LassoSelect size={18} /> },
 ];
 
+const shapeToolIds: Tool[] = ['rectangle', 'diamond', 'triangle', 'circle'];
+
 const tools: { id: Tool; icon: React.ReactNode; label: string; isAction?: boolean }[] = [
   { id: 'hand', icon: <Hand size={18} />, label: 'Hand (panning tool) - H or null' },
   { id: 'select', icon: <MousePointer2 size={18} />, label: 'Selection - S or 1' },
@@ -82,11 +84,17 @@ const ExtraToolDropdown: React.FC<ExtraToolDropdownProps> = ({
 
   if (typeof document === 'undefined') return null;
 
+  const isMobile = window.innerWidth < 768;
+
   return createPortal(
     <div className="fixed inset-0 z-200" onClick={onClose}>
       <div
         className="absolute z-201 w-48 bg-white dark:bg-[#1C1C1C] rounded-md shadow-lg border border-neutral-200 dark:border-neutral-800"
-        style={{ top: position.top, left: position.left }}
+        style={{ 
+          top: position.top, 
+          left: Math.min(position.left, window.innerWidth - 200), // Avoid overflow
+          transform: isMobile ? 'translateY(-100%)' : 'none' 
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="py-1">
@@ -120,6 +128,57 @@ const ExtraToolDropdown: React.FC<ExtraToolDropdownProps> = ({
   );
 };
 
+interface ShapeDropdownProps {
+  isOpen: boolean;
+  position: { top: number; left: number } | null;
+  activeTool: Tool;
+  onSelect: (tool: Tool) => void;
+  onClose: () => void;
+}
+
+const ShapeDropdown: React.FC<ShapeDropdownProps> = ({
+  isOpen,
+  position,
+  activeTool,
+  onSelect,
+  onClose,
+}) => {
+  if (!isOpen || !position) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-200" onClick={onClose}>
+      <div
+        className="absolute z-201 bg-white dark:bg-[#1C1C1C] rounded-md shadow-lg border border-neutral-200 dark:border-neutral-800 p-1 flex gap-1"
+        style={{ 
+          top: position.top, 
+          left: Math.max(8, Math.min(position.left, window.innerWidth - 240)),
+          transform: 'translateY(-100%)' 
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {shapeToolIds.map((toolId) => {
+          const tool = tools.find(t => t.id === toolId)!;
+          const isActive = activeTool === toolId;
+          return (
+            <button
+              key={toolId}
+              onClick={() => onSelect(toolId)}
+              className={`p-2 rounded-md transition-colors ${isActive
+                  ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-400'
+                  : 'hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-neutral-300'
+                }`}
+              title={tool.label}
+            >
+              {tool.icon}
+            </button>
+          );
+        })}
+      </div>
+    </div>,
+    document.body
+  );
+};
+
 export const Toolbar: React.FC<ToolbarProps> = ({
   activeTool,
   setActiveTool,
@@ -134,9 +193,21 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const lastCKeyRef = React.useRef<number>(0);
   const { resolvedTheme, setTheme } = useTheme();
   const [isExtraToolModalOpen, setIsExtraToolModalOpen] = React.useState(false);
+  const [isShapeModalOpen, setIsShapeModalOpen] = React.useState(false);
   const currentExtraTool = extraTools.find((tool) => tool.id === activeExtraTool) ?? extraTools[0];
   const extraToolButtonRef = React.useRef<HTMLButtonElement | null>(null);
+  const shapeButtonRef = React.useRef<HTMLButtonElement | null>(null);
   const [extraMenuPosition, setExtraMenuPosition] = React.useState<{ top: number; left: number } | null>(null);
+  const [shapeMenuPosition, setShapeMenuPosition] = React.useState<{ top: number; left: number } | null>(null);
+
+  // Default shape to show when none is active
+  const [lastActiveShape, setLastActiveShape] = React.useState<Tool>('rectangle');
+
+  useEffect(() => {
+    if (shapeToolIds.includes(activeTool)) {
+      setLastActiveShape(activeTool);
+    }
+  }, [activeTool]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -216,8 +287,33 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       const willOpen = !open;
       if (willOpen && extraToolButtonRef.current) {
         const rect = extraToolButtonRef.current.getBoundingClientRect();
-        setExtraMenuPosition({
-          top: rect.bottom + 4,
+        const isMobile = window.innerWidth < 768;
+        
+        if (isMobile) {
+          // On mobile, the toolbar is at the bottom, so open upwards
+          setExtraMenuPosition({
+            top: rect.top - 8,
+            left: rect.left,
+          });
+        } else {
+          // On desktop, the toolbar is at the top, so open downwards
+          setExtraMenuPosition({
+            top: rect.bottom + 4,
+            left: rect.left,
+          });
+        }
+      }
+      return willOpen;
+    });
+  };
+
+  const handleShapeButtonClick = () => {
+    setIsShapeModalOpen((open) => {
+      const willOpen = !open;
+      if (willOpen && shapeButtonRef.current) {
+        const rect = shapeButtonRef.current.getBoundingClientRect();
+        setShapeMenuPosition({
+          top: rect.top - 8,
           left: rect.left,
         });
       }
@@ -227,31 +323,78 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
   return (
     <div className="fixed left-1/2 -translate-x-1/2 bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-1 flex gap-1 z-50 overflow-x-auto max-w-[95vw] items-center top-auto bottom-4 md:top-4 md:bottom-auto">
-      {tools.map((tool) => {
-        const shortcutNum = TOOL_SHORTCUT_NUMBER[tool.id];
-        const shortcutLetter = TOOL_SHORTCUT_LETTER[tool.id];
-        const badge = shortcutLetter ?? (shortcutNum !== undefined ? String(shortcutNum) : undefined);
-        return (
+      {/* Desktop Tools: Show all */}
+      <div className="hidden md:flex gap-1">
+        {tools.map((tool) => {
+          const shortcutNum = TOOL_SHORTCUT_NUMBER[tool.id];
+          const shortcutLetter = TOOL_SHORTCUT_LETTER[tool.id];
+          const badge = shortcutLetter ?? (shortcutNum !== undefined ? String(shortcutNum) : undefined);
+          return (
+            <button
+              key={tool.id}
+              onClick={() => handleClick(tool.id)}
+              className={`relative p-2 rounded-md transition-colors shrink-0 ${activeTool === tool.id && !tool.isAction && activeExtraTool === 'none'
+                  ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-400'
+                  : tool.isAction
+                    ? 'hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-600 dark:text-neutral-400 hover:text-red-500 dark:hover:text-red-400'
+                    : 'hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-neutral-300'
+                }`}
+              title={tool.label}
+            >
+              {tool.icon}
+              {badge !== undefined && (
+                <span className="absolute bottom-0.5 right-0.5 text-[10px] font-medium text-neutral-400 dark:text-neutral-500 leading-none">
+                  {badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Mobile Tools: Group shapes */}
+      <div className="flex md:hidden gap-1 items-center">
+        {/* Hand and Select always shown */}
+        {tools.slice(0, 2).map((tool) => (
           <button
             key={tool.id}
             onClick={() => handleClick(tool.id)}
-            className={`relative p-2 rounded-md transition-colors shrink-0 ${activeTool === tool.id && !tool.isAction && activeExtraTool === 'none'
+            className={`p-2 rounded-md transition-colors shrink-0 ${activeTool === tool.id && activeExtraTool === 'none'
                 ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-400'
-                : tool.isAction
-                  ? 'hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-600 dark:text-neutral-400 hover:text-red-500 dark:hover:text-red-400'
-                  : 'hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-neutral-300'
+                : 'hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-neutral-300'
               }`}
-            title={tool.label}
           >
             {tool.icon}
-            {badge !== undefined && (
-              <span className="absolute bottom-0.5 right-0.5 text-[10px] font-medium text-neutral-400 dark:text-neutral-500 leading-none">
-                {badge}
-              </span>
-            )}
           </button>
-        );
-      })}
+        ))}
+
+        {/* Shape Dropdown Trigger */}
+        <button
+          ref={shapeButtonRef}
+          onClick={handleShapeButtonClick}
+          className={`p-2 rounded-md transition-colors flex items-center gap-1 ${shapeToolIds.includes(activeTool)
+              ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-400'
+              : 'text-gray-600 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800'
+            }`}
+        >
+          {tools.find(t => t.id === lastActiveShape)?.icon}
+          <ChevronDown size={14} className="text-neutral-400" />
+        </button>
+
+        {/* Other tools shown individually */}
+        {tools.filter(t => !['hand', 'select', ...shapeToolIds].includes(t.id)).map((tool) => (
+          <button
+            key={tool.id}
+            onClick={() => handleClick(tool.id)}
+            className={`p-2 rounded-md transition-colors shrink-0 ${activeTool === tool.id && activeExtraTool === 'none'
+                ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-400'
+                : 'hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-neutral-300'
+              }`}
+          >
+            {tool.icon}
+          </button>
+        ))}
+      </div>
 
       <div className="flex gap-1 border-l border-gray-200 dark:border-neutral-700 pl-1 ml-1 items-center">
         <button
@@ -303,6 +446,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           setIsExtraToolModalOpen(false);
         }}
         onClose={() => setIsExtraToolModalOpen(false)}
+      />
+
+      <ShapeDropdown
+        isOpen={isShapeModalOpen}
+        position={shapeMenuPosition}
+        activeTool={activeTool}
+        onSelect={(tool) => {
+          handleClick(tool);
+          setIsShapeModalOpen(false);
+        }}
+        onClose={() => setIsShapeModalOpen(false)}
       />
     </div>
   );
