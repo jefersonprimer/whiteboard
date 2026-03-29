@@ -319,7 +319,7 @@ function BackgroundColorPicker({ activeColor, onChangeColor }: BackgroundColorPi
         createPortal(
           <div
             ref={popoverRef}
-            className="fixed z-[9999] rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-[#1C1C1C] shadow-lg p-2 w-40"
+            className="fixed z-9999 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-[#1C1C1C] shadow-lg p-2 w-40"
             style={{
               top: anchorRect.top + anchorRect.height / 2,
               left: anchorRect.right + 8,
