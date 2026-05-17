@@ -19,6 +19,7 @@ import {
   SlidersHorizontal,
   Ellipsis,
   Copy,
+  Trash2,
 } from "lucide-react";
 
 interface PropertiesPanelProps {
@@ -28,6 +29,7 @@ interface PropertiesPanelProps {
   updateElements: (updates: Partial<WhiteboardElement>) => void;
   onLayerChange: (action: "front" | "back" | "forward" | "backward") => void;
   onDuplicateSelection?: () => void;
+  onDeleteSelection?: () => void;
 }
 
 const STROKE_COLORS_LIGHT = [
@@ -203,6 +205,7 @@ export function PropertiesPanel({
   updateElements,
   onLayerChange,
   onDuplicateSelection,
+  onDeleteSelection,
 }: PropertiesPanelProps) {
   // Early return check - must be before any hooks
   const isDrawingTool = [
@@ -313,18 +316,20 @@ export function PropertiesPanel({
         return;
       }
 
-      const horizontalGap = 12;
+      const horizontalGap = 20;
+      const verticalGap = 6;
+      const toolbarClearance = 48;
       const desktopLikeLeft = rect.right + horizontalGap;
       const clampedLeft = Math.max(
         16,
         Math.min(desktopLikeLeft, window.innerWidth - modalWidth - 16),
       );
+      const centeredTop = rect.top + rect.height / 2 - modalHeight / 2;
+      const belowButtonTop = rect.bottom + verticalGap;
+      const blendedTop = (centeredTop + belowButtonTop) / 2;
       const top = Math.max(
-        16,
-        Math.min(
-          rect.top + rect.height / 2 - modalHeight / 2,
-          window.innerHeight - modalHeight - 16,
-        ),
+        toolbarClearance,
+        Math.min(blendedTop, window.innerHeight - modalHeight - 16),
       );
       const nextArrowTop = rect.top + rect.height / 2 - top - arrowHalfWidth;
       const arrowTop = Math.max(
@@ -567,7 +572,7 @@ export function PropertiesPanel({
       >
         <div
           ref={mobileModalRef}
-          className={`absolute rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#1C1C1C] shadow-2xl p-4 max-h-[60vh] ${isSmallMobile ? "bottom-32" : ""} ${mobileModalNeedsScroll ? "overflow-y-auto custom-scrollbar" : "overflow-hidden"}`}
+          className={`absolute rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#1C1C1C] shadow-2xl p-4 max-h-[60vh] ${isSmallMobile ? "bottom-40" : ""} ${mobileModalNeedsScroll ? "overflow-y-auto custom-scrollbar" : ""}`}
           style={mobileModalStyle}
           onClick={(e) => e.stopPropagation()}
         >
@@ -1090,6 +1095,16 @@ export function PropertiesPanel({
             <Copy size={18} />
           </MobilePanelButton>
         )}
+
+        {isSelectWithSelection && onDeleteSelection && (
+          <MobilePanelButton
+            onClick={onDeleteSelection}
+            title="Apagar seleção"
+            className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
+          >
+            <Trash2 size={18} />
+          </MobilePanelButton>
+        )}
       </div>
 
       {activeMobilePanel === "stroke" &&
@@ -1146,8 +1161,8 @@ export function PropertiesPanel({
       {activeMobilePanel === "background" &&
         mobileModal(
           "Background",
-          <div className="space-y-4 overflow-hidden">
-            <div className="grid grid-cols-5 gap-2">
+          <div className="space-y-4">
+            <div className="grid grid-cols-5 gap-2 p-0.5">
               {BG_COLORS.map((c, i) => {
                 const isTransparent = c === "transparent";
                 return (
@@ -1177,7 +1192,7 @@ export function PropertiesPanel({
               <p className="text-[11px] font-semibold tracking-wide text-gray-400 dark:text-neutral-500 mb-2">
                 Shades
               </p>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-2 p-0.5">
                 {backgroundShades.map((shade, index) => (
                   <button
                     key={`${shade}-${index}`}

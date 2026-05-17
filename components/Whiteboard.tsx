@@ -357,6 +357,13 @@ export default function Whiteboard() {
     setSelectedIds(duplicates.map((e) => e.id));
   }, [selectedIds, saveHistory]);
 
+  const handleMobileDeleteSelection = useCallback(() => {
+    if (selectedIds.length === 0) return;
+    const current = elementsRef.current;
+    saveHistory(current.filter((el) => !selectedIds.includes(el.id)));
+    setSelectedIds([]);
+  }, [selectedIds, saveHistory]);
+
   const handleImageUpload = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -723,6 +730,7 @@ export default function Whiteboard() {
           updateElements={updateElements}
           onLayerChange={handleLayerChange}
           onDuplicateSelection={handleMobileDuplicateSelection}
+          onDeleteSelection={handleMobileDeleteSelection}
         />
       )}
 
