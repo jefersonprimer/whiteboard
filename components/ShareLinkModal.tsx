@@ -43,15 +43,15 @@ export function ShareLinkModal({ isOpen, onClose, link }: ShareLinkModalProps) {
       <div className="relative bg-white dark:bg-[#1C1C1C] rounded-xl shadow-2xl w-full max-w-137.5 mx-4 border border-neutral-200 dark:border-neutral-800">
         <div className="p-6 space-y-3 ">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-[#1b1b1f] dark:text-white">{t('title')}</h2>
+            <h2 className="text-lg font-semibold text-black dark:text-white">{t('title')}</h2>
           </div>
-          <p className="text-sm font-medium text-[#1b1b1f] dark:text-white">{t('linkLabel')}</p>
+          <p className="text-sm font-medium text-black dark:text-white">{t('linkLabel')}</p>
           <div className="flex items-center gap-2 border-b border-[#ebebeb] pb-4">
             <input
               type="text"
               readOnly
               value={link}
-              className="flex-1 px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md text-sm text-[#1b1b1f] dark:text-white bg-neutral-50 dark:bg-neutral-800 truncate"
+              className="flex-1 px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md text-sm text-black dark:text-white bg-neutral-50 dark:bg-neutral-800 truncate"
             />
             <button
               onClick={handleCopy}

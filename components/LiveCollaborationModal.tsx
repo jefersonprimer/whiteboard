@@ -23,7 +23,7 @@ export default function LiveCollaborationModal({ isOpen, onClose }: Props) {
             >
                 {/* Header */}
                 <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-semibold text-blue-400">Live Collaboration</h2>
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-blue-400">Live Collaboration</h2>
                 </div>
 
                 {/* Description */}

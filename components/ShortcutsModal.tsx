@@ -40,7 +40,7 @@ export function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps) {
       />
       <div className="relative bg-white dark:bg-[#1C1C1C] rounded-xl shadow-2xl w-full max-w-md mx-4 border border-neutral-200 dark:border-neutral-800">
         <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
-          <h2 className="text-lg font-semibold text-[#1b1b1f] dark:text-white">
+          <h2 className="text-lg font-semibold text-black dark:text-white">
             {t('title')}
           </h2>
         </div>
