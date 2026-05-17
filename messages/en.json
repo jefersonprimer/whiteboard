@@ -121,6 +121,9 @@
       }
     }
   },
+  "EmptyCanvasWelcome": {
+    "storageNotice": "Your drawings are saved in your browser storage. Browser storage can be cleared unexpectedly. Save your work to a file regularly to avoid losing it."
+  },
   "ClearCanvasModal": {
     "title": "Clear canvas",
     "description": "This will clear the whole canvas. Are you sure?",

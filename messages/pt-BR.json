@@ -121,6 +121,9 @@
       }
     }
   },
+  "EmptyCanvasWelcome": {
+    "storageNotice": "Seus desenhos são salvos no armazenamento do navegador. O armazenamento pode ser apagado inesperadamente. Salve seu trabalho em um arquivo regularmente para não perdê-lo."
+  },
   "ClearCanvasModal": {
     "title": "Limpar canvas",
     "description": "Isso vai limpar todo o canvas. Tem certeza?",

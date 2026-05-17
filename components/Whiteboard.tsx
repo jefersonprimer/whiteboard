@@ -39,6 +39,7 @@ import { ShortcutsModal } from "./ShortcutsModal";
 import LiveCollaborationModal from "./LiveCollaborationModal";
 import LibrarySidebar from "./LibrarySidebar";
 import { ShareLinkModal } from "./ShareLinkModal";
+import { EmptyCanvasWelcome } from "./EmptyCanvasWelcome";
 
 import { getElementsFromHash, getShareableLink } from "@/lib/fileService";
 
@@ -703,6 +704,15 @@ export default function Whiteboard() {
           </div>,
           document.body,
         )}
+      {elements.length === 0 && (
+        <EmptyCanvasWelcome
+          onOpenClick={() => setIsOpenModalOpen(true)}
+          onHelpClick={() => setIsShortcutsModalOpen(true)}
+          onLiveCollaborationClick={() =>
+            setIsLiveCollaborationModalOpen(true)
+          }
+        />
+      )}
       <Suspense fallback={null}>
         <Canvas
           activeTool={activeTool}
