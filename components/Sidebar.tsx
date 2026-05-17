@@ -72,7 +72,7 @@ export default function Sidebar({
   return (
     <div className="w-60 md:70 max-h-[calc(100dvh-150px)] bg-white dark:bg-[#1C1C1C] border border-neutral-200 dark:border-neutral-800 py-2 flex flex-col text-sm overflow-y-auto rounded shadow-2xl">
       {/* Top Section */}
-      <div className="my-1">
+      <div>
         <MenuItem
           icon={<FolderOpen size={16} />}
           label={t("open")}
