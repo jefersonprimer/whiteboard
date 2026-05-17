@@ -987,12 +987,6 @@ export const Canvas: React.FC<CanvasProps> = ({
     }
 
     if (extraTool === 'laser-pointer' && isLaserActive) {
-      const shape = stage.getIntersection(pos);
-      if (shape && shape.id()) {
-        const id = shape.id();
-        setElements((prev) => prev.filter((el) => el.id !== id));
-      }
-
       setLaserPoints(prev => {
         const newPoints = [...prev, pos.x, pos.y];
         if (newPoints.length > laserMaxPoints) {
@@ -1046,7 +1040,7 @@ export const Canvas: React.FC<CanvasProps> = ({
 
     newElementRef.current = updatedElement;
     setNewElement(updatedElement);
-  }, [activeTool, extraTool, isDrawing, isSelecting, handleEraser, isLaserActive, isLassoing, setElements]);
+  }, [activeTool, extraTool, isDrawing, isSelecting, handleEraser, isLaserActive, isLassoing]);
 
   const handleMouseUp = useCallback(async () => {
     if (pinchGestureRef.current) return;
