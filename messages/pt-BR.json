@@ -1,0 +1,130 @@
+{
+  "Sidebar": {
+    "open": "Abrir",
+    "saveTo": "Salvar como...",
+    "exportImage": "Exportar imagem...",
+    "liveCollaboration": "Colaboração ao vivo...",
+    "commandPalette": "Paleta de comandos",
+    "findOnCanvas": "Buscar no canvas",
+    "help": "Ajuda",
+    "resetCanvas": "Limpar o canvas",
+    "excalidrawPlus": "Primerdraw+",
+    "github": "GitHub",
+    "followUs": "Siga-nos",
+    "discordChat": "Chat no Discord",
+    "signUp": "Cadastrar-se",
+    "preferences": "Preferências",
+    "theme": "Tema",
+    "canvasBackground": "Fundo do canvas",
+    "language": "Idioma",
+    "english": "English",
+    "portuguese": "Português"
+  },
+  "SaveModal": {
+    "title": "Salvar em",
+    "saveToDisk": {
+      "title": "Salvar no disco",
+      "description": "Exporte os dados da cena para um arquivo que pode ser importado depois.",
+      "fileNameLabel": "Nome do arquivo:",
+      "fileNamePlaceholder": "Digite o nome do arquivo",
+      "saving": "Salvando...",
+      "saveButton": "Salvar arquivo"
+    },
+    "shareableLink": {
+      "title": "Link compartilhável",
+      "description": "Exporte como um link somente leitura.",
+      "exportButton": "Exportar para link"
+    },
+    "alerts": {
+      "enterFileName": "Digite um nome de arquivo",
+      "saveFailed": "Falha ao salvar arquivo: {message}",
+      "unknownError": "Erro desconhecido"
+    }
+  },
+  "ShareLinkModal": {
+    "title": "Link compartilhável",
+    "linkLabel": "Link",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "encryptionNotice": "O upload foi protegido com criptografia ponta a ponta, o que significa que o servidor do PrimerDraw e terceiros não conseguem ler o conteúdo."
+  },
+  "LibrarySidebar": {
+    "title": "Biblioteca",
+    "aria": {
+      "library": "Biblioteca"
+    },
+    "actions": {
+      "close": "Fechar",
+      "importing": "Importando…",
+      "importButton": "Importar .excalidrawlib",
+      "insertItemTitle": "Inserir \"{name}\"",
+      "remove": "Remover"
+    },
+    "errors": {
+      "importFailed": "Falha ao importar biblioteca"
+    },
+    "empty": {
+      "title": "Nenhum item na biblioteca ainda",
+      "descriptionPrefix": "Importe um arquivo",
+      "descriptionSuffix": "para começar"
+    },
+    "thumbnail": {
+      "empty": "Vazio"
+    },
+    "footerHint": "Clique em qualquer item para inseri-lo no canvas"
+  },
+  "ShortcutsModal": {
+    "title": "Atalhos do teclado",
+    "shortcuts": {
+      "handPan": "Mão (Pan)",
+      "select": "Selecionar",
+      "rectangle": "Retângulo",
+      "diamond": "Losango",
+      "triangle": "Triângulo",
+      "circle": "Círculo",
+      "arrow": "Seta",
+      "line": "Linha",
+      "pencil": "Lápis",
+      "text": "Texto",
+      "image": "Imagem",
+      "eraser": "Borracha",
+      "sameToolsNumberKeys": "Mesmas ferramentas (teclas numéricas)",
+      "darkTheme": "Tema escuro",
+      "lightTheme": "Tema claro",
+      "clearCanvasDoubleC": "Limpar canvas (pressione C duas vezes)",
+      "showShortcuts": "Mostrar atalhos"
+    },
+    "footerHint": "Pressione a tecla numérica ou letra para trocar de ferramenta rapidamente."
+  },
+  "Whiteboard": {
+    "duplicateSelection": "Copiar seleção (duplicar)",
+    "toolClickTooltip": {
+      "select": {
+        "prefix": "Para mover o canvas, segure",
+        "scrollWheelKey": "Roda do mouse",
+        "middle": "ou",
+        "spaceKey": "Espaço",
+        "suffix": "enquanto arrasta, ou use a ferramenta mão."
+      },
+      "arrow": {
+        "prefix": "Clique para iniciar múltiplos pontos, arraste para linha única. Pressione",
+        "aKey": "A",
+        "suffix": "novamente para mudar o tipo de seta."
+      },
+      "line": "Clique para iniciar múltiplos pontos, arraste para linha única.",
+      "pencil": "Clique e arraste, solte quando terminar.",
+      "text": "Dica: você também pode adicionar texto com duplo clique em qualquer lugar com a ferramenta selecionar.",
+      "eraser": {
+        "prefix": "Segure",
+        "altKey": "Alt",
+        "suffix": "para reverter os elementos marcados para exclusão."
+      }
+    }
+  },
+  "ClearCanvasModal": {
+    "title": "Limpar canvas",
+    "description": "Isso vai limpar todo o canvas. Tem certeza?",
+    "cancel": "Cancelar",
+    "confirm": "Limpar"
+  }
+}

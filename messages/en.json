@@ -1,0 +1,130 @@
+{
+  "Sidebar": {
+    "open": "Open",
+    "saveTo": "Save to...",
+    "exportImage": "Export image...",
+    "liveCollaboration": "Live collaboration...",
+    "commandPalette": "Command palette",
+    "findOnCanvas": "Find on canvas",
+    "help": "Help",
+    "resetCanvas": "Reset the canvas",
+    "excalidrawPlus": "Primerdraw+",
+    "github": "GitHub",
+    "followUs": "Follow us",
+    "discordChat": "Discord chat",
+    "signUp": "Sign up",
+    "preferences": "Preferences",
+    "theme": "Theme",
+    "canvasBackground": "Canvas background",
+    "language": "Language",
+    "english": "English",
+    "portuguese": "Português"
+  },
+  "SaveModal": {
+    "title": "Save to",
+    "saveToDisk": {
+      "title": "Save to disk",
+      "description": "Export the scene data to a file from which you can import later.",
+      "fileNameLabel": "File name:",
+      "fileNamePlaceholder": "Enter file name",
+      "saving": "Saving...",
+      "saveButton": "Save to file"
+    },
+    "shareableLink": {
+      "title": "Shareable link",
+      "description": "Export as a read-only link.",
+      "exportButton": "Export to link"
+    },
+    "alerts": {
+      "enterFileName": "Please enter a file name",
+      "saveFailed": "Failed to save file: {message}",
+      "unknownError": "Unknown error"
+    }
+  },
+  "ShareLinkModal": {
+    "title": "Shareable link",
+    "linkLabel": "Link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "encryptionNotice": "The upload has been secured with end-to-end encryption, which means that PrimerDraw server and third parties can't read the content."
+  },
+  "LibrarySidebar": {
+    "title": "Library",
+    "aria": {
+      "library": "Library"
+    },
+    "actions": {
+      "close": "Close",
+      "importing": "Importing…",
+      "importButton": "Import .excalidrawlib",
+      "insertItemTitle": "Insert \"{name}\"",
+      "remove": "Remove"
+    },
+    "errors": {
+      "importFailed": "Failed to import library"
+    },
+    "empty": {
+      "title": "No library items yet",
+      "descriptionPrefix": "Import an",
+      "descriptionSuffix": "file to get started"
+    },
+    "thumbnail": {
+      "empty": "Empty"
+    },
+    "footerHint": "Click any item to insert it on the canvas"
+  },
+  "ShortcutsModal": {
+    "title": "Keyboard Shortcuts",
+    "shortcuts": {
+      "handPan": "Hand (Pan)",
+      "select": "Select",
+      "rectangle": "Rectangle",
+      "diamond": "Diamond",
+      "triangle": "Triangle",
+      "circle": "Circle",
+      "arrow": "Arrow",
+      "line": "Line",
+      "pencil": "Pencil",
+      "text": "Text",
+      "image": "Image",
+      "eraser": "Eraser",
+      "sameToolsNumberKeys": "Same tools (number keys)",
+      "darkTheme": "Dark theme",
+      "lightTheme": "Light theme",
+      "clearCanvasDoubleC": "Clear canvas (press C twice)",
+      "showShortcuts": "Show shortcuts"
+    },
+    "footerHint": "Press the number key or letter to switch tools quickly."
+  },
+  "Whiteboard": {
+    "duplicateSelection": "Copy selection (duplicate)",
+    "toolClickTooltip": {
+      "select": {
+        "prefix": "To move canvas, hold",
+        "scrollWheelKey": "Scroll wheel",
+        "middle": "or",
+        "spaceKey": "Space",
+        "suffix": "while dragging, or use the hand tool."
+      },
+      "arrow": {
+        "prefix": "Click to start multiple points, drag for single line. Press",
+        "aKey": "A",
+        "suffix": "again to change arrow type."
+      },
+      "line": "Click to start multiple points, drag for single line.",
+      "pencil": "Click and drag, release when you are finished.",
+      "text": "Tip: you can also add text by double-clicking anywhere with the select tool.",
+      "eraser": {
+        "prefix": "Hold",
+        "altKey": "Alt",
+        "suffix": "to revert the elements marked for deletion."
+      }
+    }
+  },
+  "ClearCanvasModal": {
+    "title": "Clear canvas",
+    "description": "This will clear the whole canvas. Are you sure?",
+    "cancel": "Cancel",
+    "confirm": "Clear"
+  }
+}
