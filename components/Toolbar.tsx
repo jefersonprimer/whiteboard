@@ -176,7 +176,7 @@ const ExtraToolDropdown: React.FC<ExtraToolDropdownProps> = ({
   return createPortal(
     <div className="fixed inset-0 top-2 right-0 z-200" onClick={onClose}>
       <div
-        className="absolute z-201 w-40 bg-white dark:bg-[#1C1C1C] rounded-md shadow-lg border border-neutral-200 dark:border-neutral-800"
+        className="absolute z-201 w-40 bg-[#F5F5F5] dark:bg-[#1C1C1C] rounded-md shadow-lg border border-gray-200 dark:border-neutral-800"
         style={{
           top: position.top,
           left: Math.min(position.left, window.innerWidth - 200), // Avoid overflow
@@ -245,7 +245,7 @@ const ShapeDropdown: React.FC<ShapeDropdownProps> = ({
   return createPortal(
     <div className="fixed inset-0 z-200" onClick={onClose}>
       <div
-        className="absolute z-201 bg-white dark:bg-[#1C1C1C] rounded-md shadow-lg border border-neutral-200 dark:border-neutral-800 p-1 flex gap-1"
+        className="absolute z-201 bg-[#F5F5F5] dark:bg-[#1C1C1C] rounded-md shadow-lg border border-gray-200 dark:border-neutral-800 p-1 flex gap-1"
         style={{
           top: position.top,
           left: Math.max(8, Math.min(position.left, window.innerWidth - 240)),
@@ -468,7 +468,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   };
 
   return (
-    <div className="fixed left-1/2 -translate-x-1/2 bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-1 flex gap-1 z-50 overflow-x-auto max-w-[95vw] items-center top-auto bottom-4 sm:top-4 sm:bottom-auto">
+    <div className="fixed left-1/2 -translate-x-1/2 bg-[#F5F5F5] dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg shadow-lg p-1 flex gap-1 z-50 overflow-x-auto max-w-[95vw] items-center top-auto bottom-4 sm:top-4 sm:bottom-auto">
       {/* Desktop Tools: Show all */}
       <div className="hidden md:flex gap-1">
         {tools.map((tool) => {

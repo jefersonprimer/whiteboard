@@ -145,11 +145,11 @@ function ArrowheadStylePicker({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full rounded-md border border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 px-3 py-2 flex items-center justify-between gap-2 text-left text-sm"
+        className="w-full rounded-md border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 px-3 py-2 flex items-center justify-between gap-2 text-left text-sm"
       >
         <span className="flex items-center gap-2">
           {current.icon}
-          <span className="text-gray-700 dark:text-neutral-300">
+          <span className="text-gray-800 dark:text-neutral-300">
             {current.label}
           </span>
         </span>
@@ -159,7 +159,7 @@ function ArrowheadStylePicker({
         />
       </button>
       {open && (
-        <div className="absolute left-0 right-0 top-full mt-1 py-1 bg-white dark:bg-[#1C1C1C] border border-gray-100 dark:border-neutral-700 rounded-lg shadow-lg z-60">
+        <div className="absolute left-0 right-0 top-full mt-1 py-1 bg-[#F5F5F5] dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-700 rounded-lg shadow-lg z-60">
           {ARROWHEAD_STYLES.map(({ id, label, icon }) => (
             <button
               key={id}
@@ -421,7 +421,7 @@ export function PropertiesPanel({
     className?: string;
   }) => (
     <div className={`mb-5 ${className}`}>
-      <h3 className="text-xs font-normal text-[#e3e3e8] tracking-widest mb-2">
+      <h3 className="text-xs font-medium text-gray-700 dark:text-[#e3e3e8] tracking-widest mb-2">
         {title}
       </h3>
       <div className="flex flex-wrap gap-2">{children}</div>
@@ -549,7 +549,7 @@ export function PropertiesPanel({
       type="button"
       onClick={onClick}
       title={title}
-      className={`h-8 min-w-8 rounded-lg bg-white dark:bg-[#1C1C1C] flex items-center justify-center text-gray-700 dark:text-neutral-200 transition-colors hover:bg-gray-50 dark:hover:bg-neutral-900 ${className}`}
+      className={`h-8 min-w-8 rounded-lg bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-700 flex items-center justify-center text-gray-800 dark:text-neutral-200 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-900 ${className}`}
     >
       {children}
     </button>
@@ -572,7 +572,7 @@ export function PropertiesPanel({
       >
         <div
           ref={mobileModalRef}
-          className={`absolute rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#1C1C1C] shadow-2xl p-4 max-h-[60vh] ${isSmallMobile ? "bottom-40" : ""} ${mobileModalNeedsScroll ? "overflow-y-auto custom-scrollbar" : ""}`}
+          className={`absolute rounded-md border border-gray-200 dark:border-neutral-800 bg-[#F5F5F5] dark:bg-[#1C1C1C] shadow-2xl p-4 max-h-[60vh] ${isSmallMobile ? "bottom-40" : ""} ${mobileModalNeedsScroll ? "overflow-y-auto custom-scrollbar" : ""}`}
           style={mobileModalStyle}
           onClick={(e) => e.stopPropagation()}
         >
@@ -584,12 +584,12 @@ export function PropertiesPanel({
           {content}
           {isSmallMobile ? (
             <div
-              className="absolute -bottom-[10px] w-0 h-0 border-l-[10px] border-r-[10px] border-t-[10px] border-l-transparent border-r-transparent border-t-white dark:border-t-[#1C1C1C]"
+              className="absolute -bottom-[10px] w-0 h-0 border-l-[10px] border-r-[10px] border-t-[10px] border-l-transparent border-r-transparent border-t-[#F5F5F5] dark:border-t-[#1C1C1C]"
               style={{ left: mobileModalArrowLeft }}
             />
           ) : (
             <div
-              className="absolute -left-[10px] w-0 h-0 border-y-[10px] border-r-[10px] border-y-transparent border-r-white dark:border-r-[#1C1C1C]"
+              className="absolute -left-[10px] w-0 h-0 border-y-[10px] border-r-[10px] border-y-transparent border-r-[#F5F5F5] dark:border-r-[#1C1C1C]"
               style={{ top: mobileModalArrowTop }}
             />
           )}
@@ -601,7 +601,7 @@ export function PropertiesPanel({
 
   return (
     <>
-      <div className="hidden md:block fixed left-4 top-1/2 -translate-y-1/2 w-55 bg-white dark:bg-[#1C1C1C] border border-gray-100 dark:border-neutral-800 rounded-lg p-3 z-50 max-h-[80vh] overflow-y-auto custom-scrollbar transition-all duration-300">
+      <div className="hidden md:block fixed left-4 top-1/2 -translate-y-1/2 w-55 bg-[#F5F5F5] dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-lg p-3 z-50 max-h-[80vh] overflow-y-auto custom-scrollbar transition-all duration-300 shadow-sm">
         {/* STROKE COLORS */}
         {showStrokeSection && (
           <Section title="Stroke">
@@ -609,13 +609,13 @@ export function PropertiesPanel({
               {desktopStrokeColors.map((c) => (
                 <button
                   key={c}
-                  className={`w-6 h-6 rounded border transition-all hover:cursor-pointer ${strokeForSwatch === c ? "ring-1 ring-blue-500 ring-offset-1 dark:ring-offset-[#1C1C1C] scale-110 shadow-sm" : "border-gray-100 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600"}`}
+                  className={`w-6 h-6 rounded border transition-all hover:cursor-pointer ${strokeForSwatch === c ? "ring-1 ring-blue-500 ring-offset-1 dark:ring-offset-[#1C1C1C] scale-110 shadow-sm" : "border-gray-300 dark:border-neutral-700 hover:border-gray-400 dark:hover:border-neutral-600"}`}
                   style={{ backgroundColor: c }}
                   onClick={() => updateElements({ stroke: c })}
                 />
               ))}
               <div className="w-[1.5px] h-5 bg-gray-200 dark:bg-neutral-600 mx-1 shrink-0" />
-              <div className="relative w-6 h-6 rounded border border-gray-100 dark:border-neutral-700 overflow-hidden cursor-pointer hover:border-gray-300 dark:hover:border-neutral-600 transition-all shadow-sm">
+              <div className="relative w-6 h-6 rounded border border-gray-300 dark:border-neutral-700 overflow-hidden cursor-pointer hover:border-gray-300 dark:hover:border-neutral-600 transition-all shadow-sm">
                 <input
                   type="color"
                   value={
@@ -652,7 +652,7 @@ export function PropertiesPanel({
                 return (
                   <button
                     key={c + i}
-                    className={`w-6 h-6 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.fill === c ? "ring-1 ring-blue-500 ring-offset-1 dark:ring-offset-[#1C1C1C] scale-110 shadow-sm" : "border-gray-100 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600"}`}
+                    className={`w-6 h-6 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.fill === c ? "ring-1 ring-blue-500 ring-offset-1 dark:ring-offset-[#1C1C1C] scale-110 shadow-sm" : "border-gray-300 dark:border-neutral-700 hover:border-gray-400 dark:hover:border-neutral-600"}`}
                     style={
                       isTransparent ? transparentStyle : { backgroundColor: c }
                     }
@@ -663,7 +663,7 @@ export function PropertiesPanel({
                 );
               })}
               <div className="w-[1.5px] h-5 bg-gray-200 dark:bg-neutral-600 mx-1 shrink-0" />
-              <div className="relative w-6 h-6 rounded border border-gray-100 dark:border-neutral-700 overflow-hidden cursor-pointer hover:border-gray-300 dark:hover:border-neutral-600 transition-all shadow-sm">
+              <div className="relative w-6 h-6 rounded border border-gray-300 dark:border-neutral-700 overflow-hidden cursor-pointer hover:border-gray-300 dark:hover:border-neutral-600 transition-all shadow-sm">
                 <input
                   type="color"
                   value={
@@ -686,7 +686,7 @@ export function PropertiesPanel({
               <button
                 key={w}
                 onClick={() => updateElements({ strokeWidth: w })}
-                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.strokeWidth === w ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.strokeWidth === w ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
               >
                 <div
                   style={{
@@ -708,7 +708,7 @@ export function PropertiesPanel({
               <button
                 key={s}
                 onClick={() => updateElements({ strokeStyle: s })}
-                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.strokeStyle === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.strokeStyle === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
               >
                 <div
                   className={`w-2/4 h-0 ${s === "dashed" ? "border-t-2 border-dashed" : s === "dotted" ? "border-t-2 border-dotted" : "border-t-2"} border-current`}
@@ -730,7 +730,7 @@ export function PropertiesPanel({
                 key={value}
                 title={title}
                 onClick={() => updateElements({ sloppiness: value })}
-                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.sloppiness === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.sloppiness === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
               >
                 {value === 0 && (
                   <svg
@@ -795,7 +795,7 @@ export function PropertiesPanel({
               <button
                 key={e}
                 onClick={() => updateElements({ edges: e })}
-                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.edges === e ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.edges === e ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
               >
                 {e === "sharp" ? (
                   <svg
@@ -876,7 +876,7 @@ export function PropertiesPanel({
                       arrowType: value === 5 ? "double" : "simple",
                     })
                   }
-                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all text-xs font-semibold hover:cursor-pointer ${(first.arrowBreakPoints ?? 3) === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all text-xs font-semibold hover:cursor-pointer ${(first.arrowBreakPoints ?? 3) === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                 >
                   {icon}
                 </button>
@@ -884,19 +884,19 @@ export function PropertiesPanel({
             </Section>
             <Section title="Arrowheads">
               <div className="flex flex-wrap items-center gap-2 w-full">
-                <span className="text-xs text-gray-500 dark:text-neutral-400 w-full">
+                <span className="text-xs text-gray-600 dark:text-neutral-400 w-full">
                   Ponta no fim
                 </span>
                 {[true, false].map((ah) => (
                   <button
                     key={String(ah)}
                     onClick={() => updateElements({ arrowheads: ah })}
-                    className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${(first.arrowheads ?? true) === ah ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                    className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${(first.arrowheads ?? true) === ah ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                   >
                     {ah ? <ArrowRight size={20} /> : <Minus size={20} />}
                   </button>
                 ))}
-                <span className="text-xs text-gray-500 dark:text-neutral-400 w-full mt-1">
+                <span className="text-xs text-gray-600 dark:text-neutral-400 w-full mt-1">
                   Ponta no início (duas pontas)
                 </span>
                 <button
@@ -905,13 +905,13 @@ export function PropertiesPanel({
                       arrowheadTail: !(first.arrowheadTail ?? false),
                     })
                   }
-                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.arrowheadTail ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.arrowheadTail ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                   title="Cabeça no tail (seta dupla)"
                 >
                   <ArrowLeftRight size={20} />
                 </button>
                 <div className="w-full mt-1 relative">
-                  <span className="text-xs text-gray-500 dark:text-neutral-400 block mb-1">
+                  <span className="text-xs text-gray-600 dark:text-neutral-400 block mb-1">
                     Estilo da ponta
                   </span>
                   <ArrowheadStylePicker
@@ -932,7 +932,7 @@ export function PropertiesPanel({
                 <button
                   key={f}
                   onClick={() => updateElements({ fontFamily: f })}
-                  className={`px-2 py-1 text-xs font-medium rounded-xl border transition-all hover:cursor-pointer ${first.fontFamily === f ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                  className={`px-2 py-1 text-xs font-medium rounded-xl border transition-all hover:cursor-pointer ${first.fontFamily === f ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                 >
                   {f}
                 </button>
@@ -943,7 +943,7 @@ export function PropertiesPanel({
                 <button
                   key={s}
                   onClick={() => updateElements({ fontSize: s })}
-                  className={`w-7 h-7 rounded border flex items-center justify-center text-xs font-semibold transition-all hover:cursor-pointer ${first.fontSize === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                  className={`w-7 h-7 rounded border flex items-center justify-center text-xs font-semibold transition-all hover:cursor-pointer ${first.fontSize === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                 >
                   {s}
                 </button>
@@ -954,7 +954,7 @@ export function PropertiesPanel({
                 <button
                   key={a}
                   onClick={() => updateElements({ textAlign: a })}
-                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.textAlign === a ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.textAlign === a ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                 >
                   {a === "left" ? (
                     <AlignLeft size={18} />
@@ -991,28 +991,28 @@ export function PropertiesPanel({
               <button
                 onClick={() => onLayerChange("front")}
                 title="To Front"
-                className="w-7 h-7 p-1 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600 flex items-center justify-center text-black dark:text-white transition-all rounded hover:cursor-pointer"
+                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all hover:cursor-pointer"
               >
                 <ArrowDownToLine size={20} />
               </button>
               <button
                 onClick={() => onLayerChange("forward")}
                 title="Forward"
-                className="w-7 h-7 p-1 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600 rounded flex items-center justify-center text-black dark:text-white transition-all hover:cursor-pointer"
+                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all hover:cursor-pointer"
               >
                 <MoveDown size={20} />
               </button>
               <button
                 onClick={() => onLayerChange("backward")}
                 title="Backward"
-                className="w-7 h-7 p-1 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600 rounded flex items-center justify-center text-black dark:text-white transition-all hover:cursor-pointer"
+                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all hover:cursor-pointer"
               >
                 <MoveUp size={20} />
               </button>
               <button
                 onClick={() => onLayerChange("back")}
                 title="To Back"
-                className="w-7 h-7 p-1 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600 rounded flex items-center justify-center text-black dark:text-white transition-all hover:cursor-pointer"
+                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all hover:cursor-pointer"
               >
                 <ArrowUpToLine size={20} />
               </button>
@@ -1021,7 +1021,7 @@ export function PropertiesPanel({
         )}
       </div>
 
-      <div className="fixed left-4 bottom-20 z-[60] flex items-center gap-2 md:hidden sm:top-20 sm:bottom-auto sm:flex-col bg-white dark:bg-[#1C1C1C] border border-gray-100 dark:border-neutral-800 rounded-xl py-3 px-2">
+      <div className="fixed left-4 bottom-20 z-[60] flex items-center gap-2 md:hidden sm:top-20 sm:bottom-auto sm:flex-col bg-[#F5F5F5] dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-xl py-3 px-2 shadow-sm">
         {showStrokeSection && (
           <MobilePanelButton
             onClick={() => setActiveMobilePanel("stroke")}
@@ -1123,7 +1123,7 @@ export function PropertiesPanel({
               ))}
             </div>
             <div>
-              <p className="text-[11px] font-semibold tracking-wide text-gray-400 dark:text-neutral-500 mb-2">
+              <p className="text-[11px] font-semibold tracking-wide text-gray-600 dark:text-neutral-500 mb-2">
                 Shades
               </p>
               <div className="grid grid-cols-5 gap-2">
@@ -1189,7 +1189,7 @@ export function PropertiesPanel({
               })}
             </div>
             <div>
-              <p className="text-[11px] font-semibold tracking-wide text-gray-400 dark:text-neutral-500 mb-2">
+              <p className="text-[11px] font-semibold tracking-wide text-gray-600 dark:text-neutral-500 mb-2">
                 Shades
               </p>
               <div className="grid grid-cols-5 gap-2 p-0.5">
@@ -1235,7 +1235,7 @@ export function PropertiesPanel({
                   <button
                     key={w}
                     onClick={() => updateElements({ strokeWidth: w })}
-                    className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.strokeWidth === w ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                    className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.strokeWidth === w ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                   >
                     <div
                       style={{
@@ -1256,7 +1256,7 @@ export function PropertiesPanel({
                   <button
                     key={s}
                     onClick={() => updateElements({ strokeStyle: s })}
-                    className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.strokeStyle === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                    className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.strokeStyle === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                   >
                     <div
                       className={`w-2/4 h-0 ${s === "dashed" ? "border-t-2 border-dashed" : s === "dotted" ? "border-t-2 border-dotted" : "border-t-2"} border-current`}
@@ -1277,7 +1277,7 @@ export function PropertiesPanel({
                     key={value}
                     title={title}
                     onClick={() => updateElements({ sloppiness: value })}
-                    className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.sloppiness === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                    className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.sloppiness === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                   >
                     {value === 0 && (
                       <svg
@@ -1341,7 +1341,7 @@ export function PropertiesPanel({
                   <button
                     key={e}
                     onClick={() => updateElements({ edges: e })}
-                    className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.edges === e ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                    className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.edges === e ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                   >
                     {e === "sharp" ? (
                       <svg
@@ -1425,7 +1425,7 @@ export function PropertiesPanel({
                           arrowType: value === 5 ? "double" : "simple",
                         })
                       }
-                      className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all text-xs font-semibold ${(first.arrowBreakPoints ?? 3) === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                      className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all text-xs font-semibold ${(first.arrowBreakPoints ?? 3) === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                     >
                       {icon}
                     </button>
@@ -1433,19 +1433,19 @@ export function PropertiesPanel({
                 </Section>
                 <Section title="Arrowheads">
                   <div className="flex flex-wrap items-center gap-2 w-full">
-                    <span className="text-[11px] text-gray-500 dark:text-neutral-400 w-full">
+                    <span className="text-[11px] text-gray-600 dark:text-neutral-400 w-full">
                       Ponta no fim
                     </span>
                     {[true, false].map((ah) => (
                       <button
                         key={String(ah)}
                         onClick={() => updateElements({ arrowheads: ah })}
-                        className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${(first.arrowheads ?? true) === ah ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                        className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${(first.arrowheads ?? true) === ah ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                       >
                         {ah ? <ArrowRight size={20} /> : <Minus size={20} />}
                       </button>
                     ))}
-                    <span className="text-[11px] text-gray-500 dark:text-neutral-400 w-full mt-1">
+                    <span className="text-[11px] text-gray-600 dark:text-neutral-400 w-full mt-1">
                       Ponta no início (duas pontas)
                     </span>
                     <button
@@ -1454,13 +1454,13 @@ export function PropertiesPanel({
                           arrowheadTail: !(first.arrowheadTail ?? false),
                         })
                       }
-                      className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.arrowheadTail ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                      className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.arrowheadTail ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                       title="Cabeça no tail (seta dupla)"
                     >
                       <ArrowLeftRight size={20} />
                     </button>
                     <div className="w-full mt-1 relative">
-                      <span className="text-[11px] text-gray-500 dark:text-neutral-400 block mb-1">
+                      <span className="text-[11px] text-gray-600 dark:text-neutral-400 block mb-1">
                         Estilo da ponta
                       </span>
                       <ArrowheadStylePicker
@@ -1480,7 +1480,7 @@ export function PropertiesPanel({
                     <button
                       key={f}
                       onClick={() => updateElements({ fontFamily: f })}
-                      className={`px-3 py-2 text-[11px] font-medium rounded-xl border transition-all ${first.fontFamily === f ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                      className={`px-3 py-2 text-[11px] font-medium rounded-xl border transition-all ${first.fontFamily === f ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                     >
                       {f}
                     </button>
@@ -1491,7 +1491,7 @@ export function PropertiesPanel({
                     <button
                       key={s}
                       onClick={() => updateElements({ fontSize: s })}
-                      className={`w-7 h-7 rounded-md border flex items-center justify-center text-xs font-semibold transition-all ${first.fontSize === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                      className={`w-7 h-7 rounded-md border flex items-center justify-center text-xs font-semibold transition-all ${first.fontSize === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                     >
                       {s}
                     </button>
@@ -1502,7 +1502,7 @@ export function PropertiesPanel({
                     <button
                       key={a}
                       onClick={() => updateElements({ textAlign: a })}
-                      className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.textAlign === a ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-50 dark:border-neutral-700 bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                      className={`w-7 h-7 rounded-md border flex items-center justify-center transition-all ${first.textAlign === a ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                     >
                       {a === "left" ? (
                         <AlignLeft size={18} />
@@ -1545,28 +1545,28 @@ export function PropertiesPanel({
             <button
               onClick={() => onLayerChange("front")}
               title="To Front"
-              className="w-7 h-7 rounded-md bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 flex items-center justify-center text-black dark:text-white transition-all"
+              className="w-7 h-7 rounded-md border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all"
             >
               <ArrowDownToLine size={16} />
             </button>
             <button
               onClick={() => onLayerChange("forward")}
               title="Forward"
-              className="w-7 h-7 rounded-md bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 flex items-center justify-center text-black dark:text-white transition-all"
+              className="w-7 h-7 rounded-md border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all"
             >
               <MoveDown size={16} />
             </button>
             <button
               onClick={() => onLayerChange("backward")}
               title="Backward"
-              className="w-7 h-7 rounded-md bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 flex items-center justify-center text-black dark:text-white transition-all"
+              className="w-7 h-7 rounded-md border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all"
             >
               <MoveUp size={16} />
             </button>
             <button
               onClick={() => onLayerChange("back")}
               title="To Back"
-              className="w-7 h-7 rounded-md bg-gray-50/30 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 flex items-center justify-center text-black dark:text-white transition-all"
+              className="w-7 h-7 rounded-md border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all"
             >
               <ArrowUpToLine size={16} />
             </button>
