@@ -609,7 +609,7 @@ export function PropertiesPanel({
               {desktopStrokeColors.map((c) => (
                 <button
                   key={c}
-                  className={`w-6 h-6 rounded border transition-all hover:cursor-pointer ${strokeForSwatch === c ? "ring-1 ring-blue-500 ring-offset-1 dark:ring-offset-[#1C1C1C] scale-110 shadow-sm" : "border-gray-300 dark:border-neutral-700 hover:border-gray-400 dark:hover:border-neutral-600"}`}
+                  className={`w-6 h-6 rounded border transition-all ${strokeForSwatch === c ? "ring-1 ring-blue-500 ring-offset-1 dark:ring-offset-[#1C1C1C] scale-110 shadow-sm" : "border-gray-300 dark:border-neutral-700 hover:border-gray-400 dark:hover:border-neutral-600"}`}
                   style={{ backgroundColor: c }}
                   onClick={() => updateElements({ stroke: c })}
                 />
@@ -652,7 +652,7 @@ export function PropertiesPanel({
                 return (
                   <button
                     key={c + i}
-                    className={`w-6 h-6 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.fill === c ? "ring-1 ring-blue-500 ring-offset-1 dark:ring-offset-[#1C1C1C] scale-110 shadow-sm" : "border-gray-300 dark:border-neutral-700 hover:border-gray-400 dark:hover:border-neutral-600"}`}
+                    className={`w-6 h-6 rounded border flex items-center justify-center transition-all ${first.fill === c ? "ring-1 ring-blue-500 ring-offset-1 dark:ring-offset-[#1C1C1C] scale-110 shadow-sm" : "border-gray-300 dark:border-neutral-700 hover:border-gray-400 dark:hover:border-neutral-600"}`}
                     style={
                       isTransparent ? transparentStyle : { backgroundColor: c }
                     }
@@ -686,7 +686,7 @@ export function PropertiesPanel({
               <button
                 key={w}
                 onClick={() => updateElements({ strokeWidth: w })}
-                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.strokeWidth === w ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                className={`w-7 h-7 rounded border flex items-center justify-center transition-all ${first.strokeWidth === w ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
               >
                 <div
                   style={{
@@ -708,7 +708,7 @@ export function PropertiesPanel({
               <button
                 key={s}
                 onClick={() => updateElements({ strokeStyle: s })}
-                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.strokeStyle === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                className={`w-7 h-7 rounded border flex items-center justify-center transition-all ${first.strokeStyle === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
               >
                 <div
                   className={`w-2/4 h-0 ${s === "dashed" ? "border-t-2 border-dashed" : s === "dotted" ? "border-t-2 border-dotted" : "border-t-2"} border-current`}
@@ -730,7 +730,7 @@ export function PropertiesPanel({
                 key={value}
                 title={title}
                 onClick={() => updateElements({ sloppiness: value })}
-                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.sloppiness === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                className={`w-7 h-7 rounded border flex items-center justify-center transition-all ${first.sloppiness === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
               >
                 {value === 0 && (
                   <svg
@@ -795,7 +795,7 @@ export function PropertiesPanel({
               <button
                 key={e}
                 onClick={() => updateElements({ edges: e })}
-                className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.edges === e ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                className={`w-7 h-7 rounded border flex items-center justify-center transition-all ${first.edges === e ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
               >
                 {e === "sharp" ? (
                   <svg
@@ -876,7 +876,7 @@ export function PropertiesPanel({
                       arrowType: value === 5 ? "double" : "simple",
                     })
                   }
-                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all text-xs font-semibold hover:cursor-pointer ${(first.arrowBreakPoints ?? 3) === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all text-xs font-semibold ${(first.arrowBreakPoints ?? 3) === value ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                 >
                   {icon}
                 </button>
@@ -891,7 +891,7 @@ export function PropertiesPanel({
                   <button
                     key={String(ah)}
                     onClick={() => updateElements({ arrowheads: ah })}
-                    className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${(first.arrowheads ?? true) === ah ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                    className={`w-7 h-7 rounded border flex items-center justify-center transition-all ${(first.arrowheads ?? true) === ah ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                   >
                     {ah ? <ArrowRight size={20} /> : <Minus size={20} />}
                   </button>
@@ -905,7 +905,7 @@ export function PropertiesPanel({
                       arrowheadTail: !(first.arrowheadTail ?? false),
                     })
                   }
-                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.arrowheadTail ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all ${first.arrowheadTail ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                   title="Cabeça no tail (seta dupla)"
                 >
                   <ArrowLeftRight size={20} />
@@ -932,7 +932,7 @@ export function PropertiesPanel({
                 <button
                   key={f}
                   onClick={() => updateElements({ fontFamily: f })}
-                  className={`px-2 py-1 text-xs font-medium rounded-xl border transition-all hover:cursor-pointer ${first.fontFamily === f ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                  className={`px-2 py-1 text-xs font-medium rounded-xl border transition-all ${first.fontFamily === f ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                 >
                   {f}
                 </button>
@@ -943,7 +943,7 @@ export function PropertiesPanel({
                 <button
                   key={s}
                   onClick={() => updateElements({ fontSize: s })}
-                  className={`w-7 h-7 rounded border flex items-center justify-center text-xs font-semibold transition-all hover:cursor-pointer ${first.fontSize === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                  className={`w-7 h-7 rounded border flex items-center justify-center text-xs font-semibold transition-all ${first.fontSize === s ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                 >
                   {s}
                 </button>
@@ -954,7 +954,7 @@ export function PropertiesPanel({
                 <button
                   key={a}
                   onClick={() => updateElements({ textAlign: a })}
-                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all hover:cursor-pointer ${first.textAlign === a ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
+                  className={`w-7 h-7 rounded border flex items-center justify-center transition-all ${first.textAlign === a ? "bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-inner" : "border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:border-gray-200 dark:hover:border-neutral-600"}`}
                 >
                   {a === "left" ? (
                     <AlignLeft size={18} />
@@ -991,28 +991,28 @@ export function PropertiesPanel({
               <button
                 onClick={() => onLayerChange("front")}
                 title="To Front"
-                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all hover:cursor-pointer"
+                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all"
               >
                 <ArrowDownToLine size={20} />
               </button>
               <button
                 onClick={() => onLayerChange("forward")}
                 title="Forward"
-                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all hover:cursor-pointer"
+                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all"
               >
                 <MoveDown size={20} />
               </button>
               <button
                 onClick={() => onLayerChange("backward")}
                 title="Backward"
-                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all hover:cursor-pointer"
+                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all"
               >
                 <MoveUp size={20} />
               </button>
               <button
                 onClick={() => onLayerChange("back")}
                 title="To Back"
-                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all hover:cursor-pointer"
+                className="w-7 h-7 p-1 rounded border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800/50 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600 flex items-center justify-center text-gray-700 dark:text-white transition-all"
               >
                 <ArrowUpToLine size={20} />
               </button>
