@@ -549,7 +549,7 @@ export function PropertiesPanel({
       type="button"
       onClick={onClick}
       title={title}
-      className={`h-8 min-w-8 rounded-lg bg-white dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-700 flex items-center justify-center text-gray-800 dark:text-neutral-200 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-900 ${className}`}
+      className={`h-8 min-w-8 rounded-lg bg-white dark:bg-[#1C1C1C] sm:hover:border border-gray-200 dark:border-neutral-700 flex items-center justify-center text-gray-800 dark:text-neutral-200 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-900 ${className}`}
     >
       {children}
     </button>
@@ -1021,7 +1021,7 @@ export function PropertiesPanel({
         )}
       </div>
 
-      <div className="fixed left-4 bottom-20 z-[60] flex items-center gap-2 md:hidden sm:top-20 sm:bottom-auto sm:flex-col bg-[#F5F5F5] dark:bg-[#1C1C1C] border border-gray-200 dark:border-neutral-800 rounded-xl py-3 px-2 shadow-sm">
+      <div className="fixed left-4 bottom-20 z-[60] flex items-center gap-2 md:hidden sm:top-20 sm:bottom-auto sm:flex-col sm:bg-[#F5F5F5] sm:dark:bg-[#1C1C1C] sm:border border-gray-200 dark:border-neutral-800 rounded-xl sm:py-3 sm:px-2 shadow-sm">
         {showStrokeSection && (
           <MobilePanelButton
             onClick={() => setActiveMobilePanel("stroke")}
