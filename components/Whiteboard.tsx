@@ -723,6 +723,7 @@ export default function Whiteboard() {
       <Suspense fallback={null}>
         <Canvas
           activeTool={activeTool}
+          setActiveTool={setActiveTool}
           extraTool={activeExtraTool}
           elements={elements}
           setElements={setElements}

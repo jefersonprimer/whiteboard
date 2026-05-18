@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 import type { WhiteboardElement } from '@/lib/db';
 import { VelocityBrushEngine, createVelocityBrushConfig } from '@/lib/brush';
 import type { Tool, ExtraTool } from './Toolbar';
-import { PencilStroke } from './PencilStroke';
+import { PencilStroke, getPencilStrokeBounds } from './PencilStroke';
 import Konva from 'konva';
 import useImage from 'use-image';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -432,6 +432,7 @@ function pointInPolygon(x: number, y: number, flatPoints: number[]): boolean {
 
 interface CanvasProps {
   activeTool: Tool;
+  setActiveTool: (tool: Tool) => void;
   extraTool: ExtraTool;
   elements: WhiteboardElement[];
   setElements: React.Dispatch<React.SetStateAction<WhiteboardElement[]>>;
@@ -474,6 +475,7 @@ const ImageElement = ({ el, activeTool, onDragEnd, onTransformEnd, onClick }: an
 
 export const Canvas: React.FC<CanvasProps> = ({
   activeTool,
+  setActiveTool,
   extraTool,
   elements,
   setElements,
@@ -564,15 +566,17 @@ export const Canvas: React.FC<CanvasProps> = ({
 
         saveHistory([...elementsRef.current, ...repositioned]);
         setSelectedIds(repositioned.map(el => el.id));
+        setActiveTool('select');
       } else {
         saveHistory([...elementsRef.current, ...newEls]);
         setSelectedIds(newEls.map(el => el.id));
+        setActiveTool('select');
       }
     };
 
     window.addEventListener('add-library-items', handleAddLibraryItems);
     return () => window.removeEventListener('add-library-items', handleAddLibraryItems);
-  }, [saveHistory, setSelectedIds]);
+  }, [saveHistory, setActiveTool, setSelectedIds]);
 
   const getRelativePointerPosition = (stage: Konva.Stage) => {
     const transform = stage.getAbsoluteTransform().copy();
@@ -580,6 +584,12 @@ export const Canvas: React.FC<CanvasProps> = ({
     const pos = stage.getPointerPosition();
     return pos ? transform.point(pos) : { x: 0, y: 0 };
   };
+
+  const resolveElementIdFromTarget = useCallback((target: Konva.Node | null) => {
+    if (!target) return '';
+    const parentId = target.getParent()?.id();
+    return parentId || target.id() || '';
+  }, []);
 
   const getTouchDistance = (touches: TouchList) => {
     if (touches.length < 2) return 0;
@@ -628,11 +638,12 @@ export const Canvas: React.FC<CanvasProps> = ({
 
     const shape = stage.getIntersection(pos);
     if (shape && shape.id()) {
-      const id = shape.id();
+      const id = resolveElementIdFromTarget(shape);
+      if (!id) return;
       setElements((prev) => prev.filter((el) => el.id !== id));
       setSelectedIds((prev) => prev.filter((sid) => sid !== id));
     }
-  }, [setElements, setSelectedIds]);
+  }, [resolveElementIdFromTarget, setElements, setSelectedIds]);
 
   const handleTextInput = useCallback((x: number, y: number, id: string, initialText = '', onEditEnd?: () => void) => {
     const stage = stageRef.current;
@@ -767,6 +778,7 @@ export const Canvas: React.FC<CanvasProps> = ({
           saveHistory([...currentElements, element]);
         }
         setSelectedIds([id]);
+        setActiveTool('select');
       }
       onEditEnd?.();
     };
@@ -783,7 +795,7 @@ export const Canvas: React.FC<CanvasProps> = ({
       }
     });
     textarea.addEventListener('blur', finishText);
-  }, [defaultProps, saveHistory, setSelectedIds]);
+  }, [defaultProps, isDark, saveHistory, setActiveTool, setSelectedIds]);
 
   const handleMouseDown = useCallback((e: any) => {
     if (pinchGestureRef.current) return;
@@ -870,6 +882,7 @@ export const Canvas: React.FC<CanvasProps> = ({
       };
       saveHistory([...elementsRef.current, element]);
       setSelectedIds([id]);
+      setActiveTool('select');
       return;
     }
 
@@ -885,7 +898,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         setIsSelecting(true);
         setSelectionBox({ x: pos.x, y: pos.y, width: 0, height: 0, visible: true });
       } else {
-        const id = e.target.id();
+        const id = resolveElementIdFromTarget(e.target);
         if (!id) return;
 
         const metaPressed = e.evt.shiftKey || e.evt.ctrlKey || e.evt.metaKey;
@@ -904,7 +917,7 @@ export const Canvas: React.FC<CanvasProps> = ({
     if (activeTool === 'text') {
       const isClickedOnEmpty = e.target.getStage() === e.target;
       if (!isClickedOnEmpty) {
-        const hitId = e.target.id();
+        const hitId = resolveElementIdFromTarget(e.target);
         const hitElement = elementsRef.current.find((el) => el.id === hitId);
         if (hitElement?.type === 'text') {
           const alreadySelected = selectedIds.includes(hitId);
@@ -975,7 +988,7 @@ export const Canvas: React.FC<CanvasProps> = ({
 
     newElementRef.current = element;
     setNewElement(element);
-  }, [activeTool, extraTool, defaultProps, handleTextInput, handleEraser, setSelectedIds, selectedIds, isDark, saveHistory]);
+  }, [activeTool, extraTool, defaultProps, handleTextInput, handleEraser, setSelectedIds, selectedIds, isDark, saveHistory, resolveElementIdFromTarget]);
 
   const handleMouseMove = useCallback((e: any) => {
     if (pinchGestureRef.current) return;
@@ -1155,6 +1168,8 @@ export const Canvas: React.FC<CanvasProps> = ({
       }
 
       saveHistory([...elementsRef.current, finalElement]);
+      setSelectedIds([finalElement.id]);
+      setActiveTool('select');
     }
 
     pencilBrushRef.current = null;
@@ -1281,6 +1296,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         node.scaleX(1);
         node.scaleY(1);
       } else if (element.type === 'pencil') {
+        const bounds = getPencilStrokeBounds(element.points || [], element.pointWidths || []);
         const pts = element.points || [];
         const scaleX = node.scaleX();
         const scaleY = node.scaleY();
@@ -1294,6 +1310,8 @@ export const Canvas: React.FC<CanvasProps> = ({
         }
         const currentStrokeWidth = element.strokeWidth || 2;
         updatedElement.strokeWidth = Math.max(1, Math.round(currentStrokeWidth * scaleY));
+        updatedElement.x = node.x() - bounds.x;
+        updatedElement.y = node.y() - bounds.y;
         node.scaleX(1);
         node.scaleY(1);
       }
@@ -1304,7 +1322,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   }, [saveHistory]);
 
   const handleDragEnd = useCallback(async (e: any) => {
-    const id = e.target.id();
+    const id = resolveElementIdFromTarget(e.target);
     const currentElements = elementsRef.current;
     const element = currentElements.find((el) => el.id === id);
     if (element) {
@@ -1314,13 +1332,17 @@ export const Canvas: React.FC<CanvasProps> = ({
       if (element.type === 'circle' || element.type === 'triangle' || element.type === 'diamond') {
         nx -= (element.width || 0) / 2;
         ny -= (element.height || 0) / 2;
+      } else if (element.type === 'pencil') {
+        const bounds = getPencilStrokeBounds(element.points || [], element.pointWidths || []);
+        nx -= bounds.x;
+        ny -= bounds.y;
       }
 
       const updatedElement = { ...element, x: nx, y: ny };
       const updatedElements = currentElements.map((el) => el.id === id ? updatedElement : el);
       saveHistory(updatedElements);
     }
-  }, [saveHistory]);
+  }, [resolveElementIdFromTarget, saveHistory]);
 
   const getViewportSize = () => {
     if (typeof window === 'undefined') {
@@ -1846,23 +1868,38 @@ export const Canvas: React.FC<CanvasProps> = ({
               return <RegularPolygon key={el.id} {...commonProps} sides={3} radius={rw / 2} scaleY={rh / rw} x={el.x + rw / 2} y={el.y + rh / 2} />;
             }
             if (el.type === 'pencil' && el.pointWidths?.length && (el.points?.length ?? 0) >= 2) {
+              const bounds = getPencilStrokeBounds(el.points!, el.pointWidths);
               return (
-                <PencilStroke
+                <Group
                   key={el.id}
                   id={el.id}
-                  x={el.x}
-                  y={el.y}
-                  points={el.points!}
-                  pointWidths={el.pointWidths}
-                  stroke={resolveStroke(el.stroke)}
-                  opacity={el.opacity ?? 1}
+                  x={el.x + bounds.x}
+                  y={el.y + bounds.y}
                   rotation={el.rotation}
                   draggable={commonProps.draggable}
                   onDragEnd={commonProps.onDragEnd}
                   onClick={commonProps.onClick}
                   onTap={commonProps.onTap}
                   onTransformEnd={commonProps.onTransformEnd}
-                />
+                >
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={bounds.width}
+                    height={bounds.height}
+                    fill="rgba(0,0,0,0.001)"
+                    strokeEnabled={false}
+                  />
+                  <PencilStroke
+                    id={`${el.id}__stroke`}
+                    x={-bounds.x}
+                    y={-bounds.y}
+                    points={el.points!}
+                    pointWidths={el.pointWidths}
+                    stroke={resolveStroke(el.stroke)}
+                    opacity={el.opacity ?? 1}
+                  />
+                </Group>
               );
             }
             if (el.type === 'line' || el.type === 'pencil') {

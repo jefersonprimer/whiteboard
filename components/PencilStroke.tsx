@@ -5,6 +5,47 @@ import { Shape } from 'react-konva';
 import Konva from 'konva';
 import { drawVariableWidthStroke, getStrokeOutline, unpackStroke } from '@/lib/brush';
 
+export interface PencilStrokeBounds {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export function getPencilStrokeBounds(
+  points: number[],
+  pointWidths: number[],
+  minSize = 1,
+): PencilStrokeBounds {
+  if (points.length < 2) {
+    return { x: 0, y: 0, width: minSize, height: minSize };
+  }
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  for (let i = 0; i < points.length; i += 2) {
+    const x = points[i] ?? 0;
+    const y = points[i + 1] ?? 0;
+    const width = Math.max(pointWidths[Math.floor(i / 2)] ?? pointWidths[pointWidths.length - 1] ?? 2, 1);
+    const half = width / 2;
+
+    minX = Math.min(minX, x - half);
+    minY = Math.min(minY, y - half);
+    maxX = Math.max(maxX, x + half);
+    maxY = Math.max(maxY, y + half);
+  }
+
+  return {
+    x: minX,
+    y: minY,
+    width: Math.max(maxX - minX, minSize),
+    height: Math.max(maxY - minY, minSize),
+  };
+}
+
 interface PencilStrokeProps {
   id: string;
   x: number;
