@@ -12,6 +12,7 @@ export {
 } from './velocityBrush';
 
 export {
+  buildStrokeRenderData,
   drawVariableWidthStroke,
   distanceToStroke,
   getStrokeOutline,

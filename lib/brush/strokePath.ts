@@ -6,6 +6,12 @@ export interface WidthPoint {
   width: number;
 }
 
+export interface StrokeRenderData {
+  samples: WidthPoint[];
+  smoothed: WidthPoint[];
+  outline: number[];
+}
+
 /** Unpack flat points + parallel widths into structured samples. */
 export function unpackStroke(
   flatPoints: number[],
@@ -21,6 +27,16 @@ export function unpackStroke(
     });
   }
   return out;
+}
+
+export function buildStrokeRenderData(
+  flatPoints: number[],
+  pointWidths: number[],
+): StrokeRenderData {
+  const samples = unpackStroke(flatPoints, pointWidths);
+  const smoothed = smoothCenterline(samples);
+  const outline = getStrokeOutline(smoothed);
+  return { samples, smoothed, outline };
 }
 
 /**
@@ -90,18 +106,16 @@ function circlePolygon(cx: number, cy: number, r: number, segments: number): num
 /** Draw variable-width stroke with quadratic Bézier segments along the centerline. */
 export function drawVariableWidthStroke(
   ctx: CanvasRenderingContext2D,
-  points: WidthPoint[],
+  renderData: StrokeRenderData,
   color: string,
   opacity: number,
 ): void {
-  if (points.length === 0) return;
-
-  const smoothed = smoothCenterline(points);
-  const outline = getStrokeOutline(smoothed);
+  const { samples, outline } = renderData;
+  if (samples.length === 0) return;
 
   ctx.save();
   if (outline.length < 6) {
-    const p = points[0];
+    const p = samples[0];
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.width / 2, 0, Math.PI * 2);
     ctx.fillStyle = color;

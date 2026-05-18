@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { Shape } from 'react-konva';
 import Konva from 'konva';
-import { drawVariableWidthStroke, getStrokeOutline, unpackStroke } from '@/lib/brush';
+import { buildStrokeRenderData, drawVariableWidthStroke } from '@/lib/brush';
 
 export interface PencilStrokeBounds {
   x: number;
@@ -63,7 +63,7 @@ interface PencilStrokeProps {
   onTransformEnd?: (e: Konva.KonvaEventObject<Event>) => void;
 }
 
-export const PencilStroke: React.FC<PencilStrokeProps> = ({
+const PencilStrokeComponent: React.FC<PencilStrokeProps> = ({
   id,
   x,
   y,
@@ -79,20 +79,23 @@ export const PencilStroke: React.FC<PencilStrokeProps> = ({
   onTap,
   onTransformEnd,
 }) => {
+  const renderData = useMemo(
+    () => buildStrokeRenderData(points, pointWidths),
+    [points, pointWidths],
+  );
+
   const sceneFunc = useMemo(
     () => (ctx: Konva.Context, shape: Konva.Shape) => {
       const canvas = ctx._context;
-      const samples = unpackStroke(points, pointWidths);
-      drawVariableWidthStroke(canvas, samples, stroke, opacity);
+      drawVariableWidthStroke(canvas, renderData, stroke, opacity);
       ctx.fillStrokeShape(shape);
     },
-    [points, pointWidths, stroke, opacity],
+    [renderData, stroke, opacity],
   );
 
   const hitFunc = useMemo(
     () => (ctx: Konva.Context, shape: Konva.Shape) => {
-      const samples = unpackStroke(points, pointWidths);
-      const outline = getStrokeOutline(samples);
+      const { samples, outline } = renderData;
       const c = ctx._context;
       if (outline.length >= 6) {
         c.beginPath();
@@ -107,7 +110,7 @@ export const PencilStroke: React.FC<PencilStrokeProps> = ({
       }
       ctx.fillStrokeShape(shape);
     },
-    [points, pointWidths, hitStrokeWidth],
+    [renderData, hitStrokeWidth],
   );
 
   return (
@@ -126,3 +129,5 @@ export const PencilStroke: React.FC<PencilStrokeProps> = ({
     />
   );
 };
+
+export const PencilStroke = React.memo(PencilStrokeComponent);

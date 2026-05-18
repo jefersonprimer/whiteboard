@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Stage, Layer, Rect, Circle, Text, Line, Transformer, RegularPolygon, Arrow, Image as KonvaImage, Ellipse, Shape, Group, Path } from 'react-konva';
 import { nanoid } from 'nanoid';
 import type { WhiteboardElement } from '@/lib/db';
@@ -430,6 +430,66 @@ function pointInPolygon(x: number, y: number, flatPoints: number[]): boolean {
   return inside;
 }
 
+interface Bounds {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+const EMPTY_SELECTION_BOX = { x: 0, y: 0, width: 0, height: 0, visible: false };
+
+function intersectsBounds(a: Bounds, b: Bounds): boolean {
+  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+}
+
+function getElementBounds(el: WhiteboardElement): Bounds {
+  const strokePadding = Math.max(el.strokeWidth ?? 0, 1) * 4;
+
+  if (el.type === 'pencil' && el.points?.length && el.pointWidths?.length) {
+    const bounds = getPencilStrokeBounds(el.points, el.pointWidths);
+    return {
+      x: el.x + bounds.x - strokePadding,
+      y: el.y + bounds.y - strokePadding,
+      width: bounds.width + strokePadding * 2,
+      height: bounds.height + strokePadding * 2,
+    };
+  }
+
+  if ((el.type === 'line' || el.type === 'arrow') && el.points?.length) {
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    for (let i = 0; i < el.points.length; i += 2) {
+      const px = el.x + (el.points[i] ?? 0);
+      const py = el.y + (el.points[i + 1] ?? 0);
+      minX = Math.min(minX, px);
+      minY = Math.min(minY, py);
+      maxX = Math.max(maxX, px);
+      maxY = Math.max(maxY, py);
+    }
+
+    const headPadding = el.type === 'arrow' ? Math.max((el.strokeWidth ?? 2) * 6, 12) : strokePadding;
+    return {
+      x: minX - headPadding,
+      y: minY - headPadding,
+      width: Math.max(maxX - minX, 1) + headPadding * 2,
+      height: Math.max(maxY - minY, 1) + headPadding * 2,
+    };
+  }
+
+  const width = Math.abs(el.width ?? 0);
+  const height = Math.abs(el.height ?? 0);
+  return {
+    x: el.x - strokePadding,
+    y: el.y - strokePadding,
+    width: Math.max(width, 1) + strokePadding * 2,
+    height: Math.max(height, 1) + strokePadding * 2,
+  };
+}
+
 interface CanvasProps {
   activeTool: Tool;
   setActiveTool: (tool: Tool) => void;
@@ -496,9 +556,15 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
-  const [selectionBox, setSelectionBox] = useState({ x: 0, y: 0, width: 0, height: 0, visible: false });
-  const [newElement, setNewElement] = useState<WhiteboardElement | null>(null);
+  const [previewState, setPreviewState] = useState(() => ({
+    selectionBox: { ...EMPTY_SELECTION_BOX },
+    newElement: null as WhiteboardElement | null,
+    laserPoints: [] as number[],
+    laserCursorPos: null as { x: number; y: number } | null,
+  }));
+  const selectionBoxRef = useRef({ ...EMPTY_SELECTION_BOX });
   const newElementRef = useRef<WhiteboardElement | null>(null);
+  const previewFrameRef = useRef<number | null>(null);
   const [eraserSnapshot, setEraserSnapshot] = useState<WhiteboardElement[] | null>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
@@ -517,16 +583,50 @@ export const Canvas: React.FC<CanvasProps> = ({
     elementsRef.current = elements;
   }, [elements]);
 
-  const [laserPoints, setLaserPoints] = useState<number[]>([]);
+  const laserPointsRef = useRef<number[]>([]);
   const [isLaserActive, setIsLaserActive] = useState(false);
   const laserTimeoutRef = useRef<number | null>(null);
   const laserMaxPoints = 40;
-  const [laserCursorPos, setLaserCursorPos] = useState<{ x: number; y: number } | null>(null);
+  const laserCursorPosRef = useRef<{ x: number; y: number } | null>(null);
 
-  const [lassoPoints, setLassoPoints] = useState<number[]>([]);
+  const lassoPointsRef = useRef<number[]>([]);
   const [isLassoing, setIsLassoing] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const pencilBrushRef = useRef<VelocityBrushEngine | null>(null);
+
+  const requestPreviewRender = useCallback(() => {
+    if (previewFrameRef.current != null) return;
+    previewFrameRef.current = window.requestAnimationFrame(() => {
+      previewFrameRef.current = null;
+      setPreviewState({
+        selectionBox: selectionBoxRef.current,
+        newElement: newElementRef.current,
+        laserPoints: laserPointsRef.current,
+        laserCursorPos: laserCursorPosRef.current,
+      });
+    });
+  }, []);
+
+  const flushPreviewRender = useCallback(() => {
+    if (previewFrameRef.current != null) {
+      window.cancelAnimationFrame(previewFrameRef.current);
+      previewFrameRef.current = null;
+    }
+    setPreviewState({
+      selectionBox: selectionBoxRef.current,
+      newElement: newElementRef.current,
+      laserPoints: laserPointsRef.current,
+      laserCursorPos: laserCursorPosRef.current,
+    });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (previewFrameRef.current != null) {
+        window.cancelAnimationFrame(previewFrameRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (activeTool !== 'hand') {
@@ -811,7 +911,9 @@ export const Canvas: React.FC<CanvasProps> = ({
 
     if (extraTool === 'laser-pointer') {
       setIsLaserActive(true);
-      setLaserPoints([pos.x, pos.y]);
+      laserPointsRef.current = [pos.x, pos.y];
+      laserCursorPosRef.current = pos;
+      flushPreviewRender();
       if (laserTimeoutRef.current != null) {
         window.clearTimeout(laserTimeoutRef.current);
         laserTimeoutRef.current = null;
@@ -821,8 +923,9 @@ export const Canvas: React.FC<CanvasProps> = ({
 
     if (extraTool === 'lasso-selection') {
       setIsLassoing(true);
-      setLassoPoints([pos.x, pos.y]);
+      lassoPointsRef.current = [pos.x, pos.y];
       setIsSelecting(false);
+      flushPreviewRender();
       return;
     }
 
@@ -855,7 +958,7 @@ export const Canvas: React.FC<CanvasProps> = ({
       };
       setIsDrawing(true);
       newElementRef.current = element;
-      setNewElement(element);
+      flushPreviewRender();
       return;
     }
 
@@ -906,7 +1009,8 @@ export const Canvas: React.FC<CanvasProps> = ({
       if (isClickedOnEmpty) {
         setSelectedIds([]);
         setIsSelecting(true);
-        setSelectionBox({ x: pos.x, y: pos.y, width: 0, height: 0, visible: true });
+        selectionBoxRef.current = { x: pos.x, y: pos.y, width: 0, height: 0, visible: true };
+        flushPreviewRender();
       } else {
         const id = resolveElementIdFromTarget(e.target);
         if (!id) return;
@@ -997,8 +1101,8 @@ export const Canvas: React.FC<CanvasProps> = ({
     }
 
     newElementRef.current = element;
-    setNewElement(element);
-  }, [activeTool, extraTool, defaultProps, handleTextInput, handleEraser, setSelectedIds, selectedIds, isDark, saveHistory, resolveElementIdFromTarget]);
+    flushPreviewRender();
+  }, [activeTool, extraTool, defaultProps, handleTextInput, handleEraser, setSelectedIds, selectedIds, isDark, saveHistory, resolveElementIdFromTarget, flushPreviewRender]);
 
   const handleMouseMove = useCallback((e: any) => {
     if (pinchGestureRef.current) return;
@@ -1006,22 +1110,23 @@ export const Canvas: React.FC<CanvasProps> = ({
     const pos = getRelativePointerPosition(stage);
 
     if (extraTool === 'laser-pointer') {
-      setLaserCursorPos(pos);
+      laserCursorPosRef.current = pos;
+      requestPreviewRender();
     }
 
     if (extraTool === 'laser-pointer' && isLaserActive) {
-      setLaserPoints(prev => {
-        const newPoints = [...prev, pos.x, pos.y];
-        if (newPoints.length > laserMaxPoints) {
-          return newPoints.slice(-laserMaxPoints);
-        }
-        return newPoints;
-      });
+      const nextPoints = [...laserPointsRef.current, pos.x, pos.y];
+      laserPointsRef.current =
+        nextPoints.length > laserMaxPoints
+          ? nextPoints.slice(-laserMaxPoints)
+          : nextPoints;
+      requestPreviewRender();
       return;
     }
 
     if (extraTool === 'lasso-selection' && isLassoing) {
-      setLassoPoints(prev => [...prev, pos.x, pos.y]);
+      lassoPointsRef.current = [...lassoPointsRef.current, pos.x, pos.y];
+      requestPreviewRender();
       return;
     }
 
@@ -1031,7 +1136,9 @@ export const Canvas: React.FC<CanvasProps> = ({
     }
 
     if (isSelecting) {
-      setSelectionBox(prev => ({ ...prev, width: pos.x - prev.x, height: pos.y - prev.y }));
+      const box = selectionBoxRef.current;
+      selectionBoxRef.current = { ...box, width: pos.x - box.x, height: pos.y - box.y };
+      requestPreviewRender();
       return;
     }
 
@@ -1062,8 +1169,8 @@ export const Canvas: React.FC<CanvasProps> = ({
     }
 
     newElementRef.current = updatedElement;
-    setNewElement(updatedElement);
-  }, [activeTool, extraTool, isDrawing, isSelecting, handleEraser, isLaserActive, isLassoing]);
+    requestPreviewRender();
+  }, [activeTool, extraTool, isDrawing, isSelecting, handleEraser, isLaserActive, isLassoing, requestPreviewRender]);
 
   const handleMouseUp = useCallback(async () => {
     if (pinchGestureRef.current) return;
@@ -1074,15 +1181,17 @@ export const Canvas: React.FC<CanvasProps> = ({
         window.clearTimeout(laserTimeoutRef.current);
       }
       laserTimeoutRef.current = window.setTimeout(() => {
-        setLaserPoints([]);
+        laserPointsRef.current = [];
         laserTimeoutRef.current = null;
+        flushPreviewRender();
       }, 300);
+      flushPreviewRender();
       return;
     }
 
     if (extraTool === 'lasso-selection' && isLassoing) {
       setIsLassoing(false);
-      if (lassoPoints.length >= 6) {
+      if (lassoPointsRef.current.length >= 6) {
         const selected = elementsRef.current
           .filter((el) => {
             let cx = el.x;
@@ -1104,17 +1213,18 @@ export const Canvas: React.FC<CanvasProps> = ({
                 cy = el.y + sy / n;
               }
             }
-            return pointInPolygon(cx, cy, lassoPoints);
+            return pointInPolygon(cx, cy, lassoPointsRef.current);
           })
           .map((el) => el.id);
         setSelectedIds(selected);
       }
-      setLassoPoints([]);
+      lassoPointsRef.current = [];
+      flushPreviewRender();
       return;
     }
 
     if (isSelecting) {
-      const box = selectionBox;
+      const box = selectionBoxRef.current;
       const x1 = Math.min(box.x, box.x + box.width);
       const x2 = Math.max(box.x, box.x + box.width);
       const y1 = Math.min(box.y, box.y + box.height);
@@ -1128,7 +1238,8 @@ export const Canvas: React.FC<CanvasProps> = ({
 
       setSelectedIds(selected);
       setIsSelecting(false);
-      setSelectionBox(prev => ({ ...prev, visible: false }));
+      selectionBoxRef.current = { ...selectionBoxRef.current, visible: false };
+      flushPreviewRender();
       return;
     }
 
@@ -1185,8 +1296,8 @@ export const Canvas: React.FC<CanvasProps> = ({
 
     pencilBrushRef.current = null;
     newElementRef.current = null;
-    setNewElement(null);
-  }, [isSelecting, selectionBox, activeTool, isDrawing, eraserSnapshot, saveHistory, setSelectedIds, extraTool, isLaserActive, lassoPoints]);
+    flushPreviewRender();
+  }, [isSelecting, activeTool, isDrawing, eraserSnapshot, saveHistory, setSelectedIds, setActiveTool, extraTool, isLaserActive, isLassoing, flushPreviewRender]);
 
   const handleTransformEnd = useCallback(() => {
     const nodes = transformerRef.current?.nodes();
@@ -1384,6 +1495,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   // Update stage position when stagePosition prop changes (but not during drag)
   // Note: Initial position is set via x/y props on Stage
   const isDraggingRef = useRef(false);
+  const stageDragFrameRef = useRef<number | null>(null);
   useEffect(() => {
     if (isDraggingRef.current) return; // Don't update during drag
     const stage = stageRef.current;
@@ -1406,6 +1518,10 @@ export const Canvas: React.FC<CanvasProps> = ({
   const handleStageDragEnd = useCallback(() => {
     isDraggingRef.current = false;
     setIsPanning(false);
+    if (stageDragFrameRef.current != null) {
+      window.cancelAnimationFrame(stageDragFrameRef.current);
+      stageDragFrameRef.current = null;
+    }
     const stage = stageRef.current;
     if (stage) {
       const pos = stage.position();
@@ -1415,11 +1531,14 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   // Also save position during drag
   const handleStageDragMove = useCallback(() => {
-    const stage = stageRef.current;
-    if (stage) {
+    if (stageDragFrameRef.current != null) return;
+    stageDragFrameRef.current = window.requestAnimationFrame(() => {
+      stageDragFrameRef.current = null;
+      const stage = stageRef.current;
+      if (!stage) return;
       const pos = stage.position();
       setStagePosition({ x: pos.x, y: pos.y });
-    }
+    });
   }, [setStagePosition]);
 
   useEffect(() => {
@@ -1470,17 +1589,18 @@ export const Canvas: React.FC<CanvasProps> = ({
         setIsDrawing(false);
         pencilBrushRef.current = null;
         newElementRef.current = null;
-        setNewElement(null);
+        flushPreviewRender();
       }
       if (isSelecting) {
         setIsSelecting(false);
-        setSelectionBox((prev) => ({ ...prev, visible: false }));
+        selectionBoxRef.current = { ...selectionBoxRef.current, visible: false };
+        flushPreviewRender();
       }
       return;
     }
 
     handleMouseDown(e);
-  }, [handleMouseDown, isDrawing, isSelecting]);
+  }, [flushPreviewRender, handleMouseDown, isDrawing, isSelecting]);
 
   const handleTouchMove = useCallback((e: any) => {
     const touchEvent = e.evt as TouchEvent;
@@ -1531,6 +1651,14 @@ export const Canvas: React.FC<CanvasProps> = ({
       transformerRef.current.nodes(nodes as Konva.Node[]);
     }
   }, [selectedIds, elements]);
+
+  useEffect(() => {
+    return () => {
+      if (stageDragFrameRef.current != null) {
+        window.cancelAnimationFrame(stageDragFrameRef.current);
+      }
+    };
+  }, []);
 
   const [clipboard, setClipboard] = useState<WhiteboardElement[]>([]);
 
@@ -1676,14 +1804,15 @@ export const Canvas: React.FC<CanvasProps> = ({
   useEffect(() => {
     if (extraTool !== 'laser-pointer') {
       setIsLaserActive(false);
-      setLaserPoints([]);
-      setLaserCursorPos(null);
+      laserPointsRef.current = [];
+      laserCursorPosRef.current = null;
       if (laserTimeoutRef.current != null) {
         window.clearTimeout(laserTimeoutRef.current);
         laserTimeoutRef.current = null;
       }
+      flushPreviewRender();
     }
-  }, [extraTool]);
+  }, [extraTool, flushPreviewRender]);
 
   const getDash = (style: string) => {
     if (style === 'dashed') return [10, 5];
@@ -1755,8 +1884,26 @@ export const Canvas: React.FC<CanvasProps> = ({
             ? 'default'
             : 'crosshair';
 
+  const { selectionBox, newElement, laserPoints, laserCursorPos } = previewState;
+
+  const viewportBounds = useMemo<Bounds>(() => {
+    const scale = Math.max(zoom, MIN_ZOOM);
+    const padding = 240 / scale;
+    return {
+      x: -stagePosition.x / scale - padding,
+      y: -stagePosition.y / scale - padding,
+      width: stageSize.width / scale + padding * 2,
+      height: stageSize.height / scale + padding * 2,
+    };
+  }, [stagePosition.x, stagePosition.y, stageSize.height, stageSize.width, zoom]);
+
+  const visibleElements = useMemo(
+    () => elements.filter((el) => intersectsBounds(getElementBounds(el), viewportBounds)),
+    [elements, viewportBounds],
+  );
+
   // Collect web-embed elements that need HTML overlay rendering
-  const webEmbedElements = elements.filter(el => el.type === 'web-embed');
+  const webEmbedElements = visibleElements.filter((el) => el.type === 'web-embed');
 
   const commitWebEmbedUrl = useCallback(
     (id: string, value: string) => {
@@ -1799,7 +1946,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         style={{ cursor, touchAction: 'none' }}
       >
         <Layer>
-          {elements.map((el) => {
+          {visibleElements.map((el) => {
             const commonProps: any = {
               id: el.id, x: el.x, y: el.y, stroke: resolveStroke(el.stroke), strokeWidth: el.strokeWidth,
               fill: el.fill, rotation: el.rotation, opacity: el.opacity ?? 1,
