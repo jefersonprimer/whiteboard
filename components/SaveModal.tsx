@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Download, Link } from 'lucide-react';
+import { Download, Link, X } from 'lucide-react';
 import { useTranslations } from '@/lib/i18n-hooks';
 import { saveToFile, generateDefaultFileName, getShareableLink } from '@/lib/fileService';
 import type { WhiteboardElement } from '@/lib/db';
@@ -61,74 +61,82 @@ export function SaveModal({ isOpen, onClose, elements }: SaveModalProps) {
 
   return (
     <>
-      <div className="fixed inset-0 z-200 flex items-center justify-center">
+      <div className="fixed inset-0 z-200 flex items-center justify-center p-4">
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
           onClick={onClose}
         />
 
         {/* Modal */}
-        <div className="relative bg-white dark:bg-[#1C1C1C] rounded-xl shadow-2xl w-full max-w-[300px] md:max-w-[700px] mx-4 border border-neutral-200 dark:border-neutral-800 max-h-[90vh] overflow-y-auto">
-          <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
-            <h2 className="text-lg font-semibold text-black dark:text-white">{t('title')}</h2>
-          
+        <div className="relative bg-white dark:bg-[#1C1C1C] rounded-lg shadow-2xl w-full max-w-[360px] border border-neutral-200 dark:border-neutral-800 overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100 dark:border-neutral-800">
+            <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">{t('title')}</h2>
+            <button
+              onClick={onClose}
+              className="p-1 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 transition-colors"
+            >
+              <X size={18} />
+            </button>
           </div>
 
-          <div className="flex flex-col md:flex-row items-stretch justify-center p-6 gap-8">
+          <div className="p-6 space-y-6">
             {/* Save to disk */}
-            <section className="flex flex-col items-center justify-center space-y-2 w-full md:w-1/2">
-
-              <div className="flex flex-col items-center justify-center">
-                <span className="p-4 bg-blue-400 rounded-full">
-                  <Download size={32}/>
-                </span>
+            <section className="space-y-4">
+              <div className="flex items-center gap-2 text-blue-500">
+                <Download size={18} />
+                <h3 className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                  {t('saveToDisk.title')}
+                </h3>
               </div>
-              <h3 className="text-lg font-semibold text-black dark:text-white">{t('saveToDisk.title')}</h3>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                {t('saveToDisk.description')}
-              </p>
+              
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-black dark:text-white">
-                  {t('saveToDisk.fileNameLabel')}
-                </label>
-                <div className="flex items-center gap-2">
+                <div className="relative flex items-center">
                   <input
                     type="text"
                     value={filename}
                     onChange={(e) => setFilename(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="flex-1 px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md text-sm text-black dark:text-white bg-white dark:bg-neutral-800 outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                    className="w-full pl-3 pr-12 py-2 text-sm bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-md outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all text-neutral-900 dark:text-neutral-100"
                     placeholder={t('saveToDisk.fileNamePlaceholder')}
                     autoFocus
                   />
-                  <span className="text-sm text-neutral-500 dark:text-neutral-400">.pwb</span>
+                  <span className="absolute right-3 text-xs font-medium text-neutral-400">
+                    .pwb
+                  </span>
                 </div>
               </div>
+
               <button
                 onClick={handleSave}
                 disabled={isSaving || !filename.trim()}
-                className=" px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSaving ? t('saveToDisk.saving') : t('saveToDisk.saveButton')}
               </button>
             </section>
 
-            {/* Shareable link */}
-            <section className="flex flex-col items-center p-6 space-y-2 w-full md:w-1/2">
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-neutral-100 dark:bg-neutral-800" />
+              <span className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">OR</span>
+              <div className="h-px flex-1 bg-neutral-100 dark:bg-neutral-800" />
+            </div>
 
-              <div className="flex flex-col items-center justify-center">
-                <span className="p-4 bg-blue-400 rounded-full">
-                  <Link size={32}/>
-                </span>
+            {/* Shareable link */}
+            <section className="space-y-3">
+              <div className="flex items-center gap-2 text-blue-500">
+                <Link size={18} />
+                <h3 className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                  {t('shareableLink.title')}
+                </h3>
               </div>
-              <h3 className="text-lg font-semibold text-black dark:text-white">{t('shareableLink.title')}</h3>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
                 {t('shareableLink.description')}
               </p>
               <button
                 onClick={handleExportToLink}
-                className="w-full px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors"
+                className="w-full px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 border border-neutral-200 dark:border-neutral-700 rounded-md transition-colors"
               >
                 {t('shareableLink.exportButton')}
               </button>

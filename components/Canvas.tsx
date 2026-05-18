@@ -525,7 +525,14 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   const [lassoPoints, setLassoPoints] = useState<number[]>([]);
   const [isLassoing, setIsLassoing] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
   const pencilBrushRef = useRef<VelocityBrushEngine | null>(null);
+
+  useEffect(() => {
+    if (activeTool !== 'hand') {
+      setIsPanning(false);
+    }
+  }, [activeTool]);
 
   // Handle library items inserted from LibrarySidebar
   useEffect(() => {
@@ -886,7 +893,10 @@ export const Canvas: React.FC<CanvasProps> = ({
       return;
     }
 
-    if (activeTool === 'hand') return;
+    if (activeTool === 'hand') {
+      setIsPanning(true);
+      return;
+    }
 
     if (activeTool === 'select') {
       const isClickedOnTransformer = e.target.getParent()?.className === 'Transformer';
@@ -1057,6 +1067,7 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   const handleMouseUp = useCallback(async () => {
     if (pinchGestureRef.current) return;
+    setIsPanning(false);
     if (extraTool === 'laser-pointer' && isLaserActive) {
       setIsLaserActive(false);
       if (laserTimeoutRef.current != null) {
@@ -1388,11 +1399,13 @@ export const Canvas: React.FC<CanvasProps> = ({
   // Handle stage drag start
   const handleStageDragStart = useCallback(() => {
     isDraggingRef.current = true;
+    setIsPanning(true);
   }, []);
 
   // Handle stage drag end to save position
   const handleStageDragEnd = useCallback(() => {
     isDraggingRef.current = false;
+    setIsPanning(false);
     const stage = stageRef.current;
     if (stage) {
       const pos = stage.position();
@@ -1737,7 +1750,7 @@ export const Canvas: React.FC<CanvasProps> = ({
       : extraTool === 'lasso-selection' || extraTool === 'frame' || extraTool === 'web-embed'
         ? 'crosshair'
         : activeTool === 'hand'
-          ? 'grab'
+          ? (isPanning ? 'grabbing' : 'grab')
           : activeTool === 'select'
             ? 'default'
             : 'crosshair';
