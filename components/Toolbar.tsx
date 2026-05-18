@@ -55,6 +55,7 @@ interface ToolbarProps {
   activeExtraTool: ExtraTool;
   setActiveExtraTool: (tool: ExtraTool) => void;
   onToolClick?: (tool: Tool) => void;
+  onToolbarInteraction?: () => void;
 }
 
 // Shortcut mapping: key -> tool (t=text, g=triangle/triângulo to avoid conflict)
@@ -287,6 +288,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   activeExtraTool,
   setActiveExtraTool,
   onToolClick,
+  onToolbarInteraction,
 }) => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const lastCKeyRef = React.useRef<number>(0);
@@ -399,10 +401,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   }, [setActiveTool, onClearCanvas, onHelpClick, setTheme, setActiveExtraTool]);
 
   const handleThemeToggle = () => {
+    onToolbarInteraction?.();
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
   const handleClick = (toolId: Tool) => {
+    onToolbarInteraction?.();
     onToolClick?.(toolId);
     if (toolId === "image") {
       fileInputRef.current?.click();
@@ -413,6 +417,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   };
 
   const handleExtraButtonClick = () => {
+    onToolbarInteraction?.();
     setIsExtraToolModalOpen((open) => {
       const willOpen = !open;
       if (willOpen && extraToolButtonRef.current) {
@@ -438,6 +443,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   };
 
   const handleShapeButtonClick = () => {
+    onToolbarInteraction?.();
     setIsShapeModalOpen((open) => {
       const willOpen = !open;
       if (willOpen && shapeButtonRef.current) {
@@ -453,6 +459,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   };
 
   const handleLineButtonClick = () => {
+    onToolbarInteraction?.();
     setIsLineModalOpen((open) => {
       const willOpen = !open;
       if (willOpen && lineButtonRef.current) {
@@ -601,7 +608,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           {resolvedTheme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
         </button>
         <button
-          onClick={onClearCanvas}
+          onClick={() => {
+            onToolbarInteraction?.();
+            onClearCanvas();
+          }}
           className="hidden md:flex p-2 rounded-md transition-colors text-gray-600 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-500 dark:hover:text-red-400 hover:cursor-pointer"
           title="Clear Canvas - CC"
         >
@@ -622,6 +632,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         position={extraMenuPosition}
         activeExtraTool={activeExtraTool}
         onSelect={(tool) => {
+          onToolbarInteraction?.();
           setActiveExtraTool(tool);
           setIsExtraToolModalOpen(false);
         }}

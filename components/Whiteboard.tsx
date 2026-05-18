@@ -89,6 +89,8 @@ export default function Whiteboard() {
     useState(false);
   const [isLibrarySidebarOpen, setIsLibrarySidebarOpen] = useState(false);
   const [isShareLinkModalOpen, setIsShareLinkModalOpen] = useState(false);
+  const [isEmptyCanvasWelcomeDismissed, setIsEmptyCanvasWelcomeDismissed] =
+    useState(false);
   const [shareLink, setShareLink] = useState("");
   const [elementsFromHash, setElementsFromHash] = useState<
     WhiteboardElement[] | null
@@ -160,6 +162,10 @@ export default function Whiteboard() {
 
   const handleToolbarToolClick = useCallback((tool: Tool) => {
     setClickTooltipTool(TOOLS_WITH_CLICK_TOOLTIP.has(tool) ? tool : null);
+  }, []);
+
+  const handleToolbarInteraction = useCallback(() => {
+    setIsEmptyCanvasWelcomeDismissed(true);
   }, []);
 
   useEffect(() => {
@@ -691,6 +697,7 @@ export default function Whiteboard() {
         activeExtraTool={activeExtraTool}
         setActiveExtraTool={setActiveExtraTool}
         onToolClick={handleToolbarToolClick}
+        onToolbarInteraction={handleToolbarInteraction}
       />
       {clickTooltipTool !== null &&
         clickTooltipTool === activeTool &&
@@ -704,7 +711,7 @@ export default function Whiteboard() {
           </div>,
           document.body,
         )}
-      {elements.length === 0 && (
+      {elements.length === 0 && !isEmptyCanvasWelcomeDismissed && (
         <EmptyCanvasWelcome
           onOpenClick={() => setIsOpenModalOpen(true)}
           onHelpClick={() => setIsShortcutsModalOpen(true)}

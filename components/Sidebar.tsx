@@ -30,6 +30,10 @@ type SidebarProps = {
   onLiveCollaborationClick?: () => void;
 };
 
+const SIDEBAR_LINKS = {
+  github: "https://github.com/jefersonprimer/whiteboard",
+} as const;
+
 const BG_CLASS_TO_COLOR: Record<string, string> = {
   "bg-white": "#ffffff",
   "bg-gray-50": "#f9fafb",
@@ -123,7 +127,11 @@ export default function Sidebar({
       {/* Links */}
       <div>
         <MenuItem icon={<ImageIcon size={16} />} label={t("excalidrawPlus")} />
-        <MenuItem icon={<GitBranch size={16} />} label={t("github")} />
+        <MenuItem
+          icon={<GitBranch size={16} />}
+          label={t("github")}
+          href={SIDEBAR_LINKS.github}
+        />
         <MenuItem icon={<Share2 size={16} />} label={t("followUs")} />
         <MenuItem icon={<MessageCircle size={16} />} label={t("discordChat")} />
         <MenuItem icon={<LogIn size={16} />} label={t("signUp")} highlight />
@@ -276,6 +284,7 @@ type MenuItemProps = {
   shortcut?: string;
   highlight?: boolean;
   isResetCanvas?: boolean;
+  href?: string;
   onClick?: () => void;
 };
 
@@ -285,18 +294,18 @@ function MenuItem({
   shortcut,
   highlight,
   isResetCanvas,
+  href,
   onClick,
 }: MenuItemProps) {
-  return (
-    <div
-      onClick={onClick}
-      className={`
-        flex items-center justify-between p-2 cursor-pointer
-        hover:bg-neutral-100 dark:hover:bg-neutral-800 text-[#1b1b1f] dark:text-white
-        ${highlight ? "text-blue-400 font-bold" : ""}
-        ${isResetCanvas ? "hover:text-red-600 font-medium" : ""}
-      `}
-    >
+  const className = `
+    flex items-center justify-between p-2 cursor-pointer no-underline
+    hover:bg-neutral-100 dark:hover:bg-neutral-800 text-[#1b1b1f] dark:text-white
+    ${highlight ? "text-blue-400 font-bold" : ""}
+    ${isResetCanvas ? "hover:text-red-600 font-medium" : ""}
+  `;
+
+  const content = (
+    <>
       <div className="flex items-center gap-2">
         {icon}
         <span className="text-sm font-normal">{label}</span>
@@ -307,6 +316,25 @@ function MenuItem({
           {shortcut}
         </span>
       )}
+    </>
+  );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <div onClick={onClick} className={className}>
+      {content}
     </div>
   );
 }
