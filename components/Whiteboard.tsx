@@ -91,6 +91,7 @@ export default function Whiteboard() {
   const [isShareLinkModalOpen, setIsShareLinkModalOpen] = useState(false);
   const [isEmptyCanvasWelcomeDismissed, setIsEmptyCanvasWelcomeDismissed] =
     useState(false);
+  const [isSceneLoading, setIsSceneLoading] = useState(true);
   const [shareLink, setShareLink] = useState("");
   const [elementsFromHash, setElementsFromHash] = useState<
     WhiteboardElement[] | null
@@ -262,8 +263,12 @@ export default function Whiteboard() {
 
   useEffect(() => {
     const loadElements = async () => {
-      const storedElements = await db.elements.toArray();
-      setElements(storedElements);
+      try {
+        const storedElements = await db.elements.toArray();
+        setElements(storedElements);
+      } finally {
+        setIsSceneLoading(false);
+      }
     };
     loadElements();
   }, [setElements]);
@@ -711,7 +716,14 @@ export default function Whiteboard() {
           </div>,
           document.body,
         )}
-      {elements.length === 0 && !isEmptyCanvasWelcomeDismissed && (
+      {isSceneLoading && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/70 text-sm font-medium text-gray-600 backdrop-blur-sm dark:bg-neutral-950/70 dark:text-neutral-300">
+          {t("loadingScenes")}
+        </div>
+      )}
+      {elements.length === 0 &&
+        !isSceneLoading &&
+        !isEmptyCanvasWelcomeDismissed && (
         <EmptyCanvasWelcome
           onOpenClick={() => setIsOpenModalOpen(true)}
           onHelpClick={() => setIsShortcutsModalOpen(true)}

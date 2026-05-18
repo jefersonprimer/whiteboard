@@ -98,6 +98,7 @@
   },
   "Whiteboard": {
     "duplicateSelection": "Copy selection (duplicate)",
+    "loadingScenes": "Loading scenes...",
     "toolClickTooltip": {
       "select": {
         "prefix": "To move canvas, hold",
