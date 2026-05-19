@@ -14,6 +14,8 @@ import { Pencil } from 'lucide-react';
 
 const MIN_ZOOM = 0.1;
 const MAX_ZOOM = 5;
+const TEXT_LINE_HEIGHT = 1.2;
+const TEXT_VERTICAL_BUFFER_PX = 4;
 
 function detectUrlType(url: string): 'image' | 'video' | 'youtube' | 'vimeo' | 'unknown' {
   const trimmedUrl = url.trim().toLowerCase();
@@ -806,7 +808,7 @@ export const Canvas: React.FC<CanvasProps> = ({
     textarea.style.zIndex = '9999';
     textarea.style.background = 'transparent';
     textarea.style.minWidth = '20px';
-    textarea.style.minHeight = '1.2em';
+    textarea.style.minHeight = `${TEXT_LINE_HEIGHT}em`;
     textarea.style.padding = '0';
     textarea.style.margin = '0';
     textarea.style.display = 'block';
@@ -815,7 +817,7 @@ export const Canvas: React.FC<CanvasProps> = ({
     textarea.style.overflow = 'hidden';
     textarea.style.resize = 'none';
     // Keep editing caret/selection tight to glyph bounds.
-    textarea.style.lineHeight = '1';
+    textarea.style.lineHeight = String(TEXT_LINE_HEIGHT);
     textarea.style.letterSpacing = '0';
     textarea.style.whiteSpace = 'pre';
 
@@ -842,7 +844,10 @@ export const Canvas: React.FC<CanvasProps> = ({
       const val = textarea.value;
       // Add 5px buffer before dividing by scale to prevent clipping
       const finalWidth = Math.max((textarea.offsetWidth + 5) / scale, 5);
-      const finalHeight = Math.max((textarea.offsetHeight) / scale, 5);
+      // Keep a small vertical buffer so the persisted Konva text box
+      // doesn't clip the last line.
+      const verticalBuffer = TEXT_VERTICAL_BUFFER_PX / scale;
+      const finalHeight = Math.max((textarea.offsetHeight / scale) + verticalBuffer, 5);
 
       try {
         if (textarea.parentNode && document.body.contains(textarea)) {
@@ -891,7 +896,13 @@ export const Canvas: React.FC<CanvasProps> = ({
     };
 
     textarea.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      // Allow Enter to insert a new line. Use Ctrl/Cmd+Enter to commit text.
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        finishText();
+        return;
+      }
+      if (e.key === 'Escape') {
         e.preventDefault();
         finishText();
         return;
@@ -1316,25 +1327,32 @@ export const Canvas: React.FC<CanvasProps> = ({
         rotation: node.rotation(),
       };
 
-      if (element.type === 'rectangle' || element.type === 'text' || element.type === 'image') {
+      if (element.type === 'rectangle' || element.type === 'image') {
         const newWidth = node.width() * node.scaleX();
         const newHeight = node.height() * node.scaleY();
         updatedElement.width = newWidth;
         updatedElement.height = newHeight;
 
-        // For text, update fontSize proportionally to the scale
-        if (element.type === 'text') {
-          const scaleX = node.scaleX();
-          const scaleY = node.scaleY();
-          // Use average scale to maintain aspect ratio, or use scaleY for vertical scaling
-          const avgScale = (scaleX + scaleY) / 2;
-          const currentFontSize = element.fontSize ?? 20;
-          updatedElement.fontSize = Math.max(8, Math.round(currentFontSize * avgScale));
-        }
-
         // Update node immediately so it doesn't snap back to old size before re-render
         node.width(newWidth);
         node.height(newHeight);
+        node.scaleX(1);
+        node.scaleY(1);
+      } else if (element.type === 'text') {
+        const baseWidth = element.width ?? 0;
+        const baseHeight = element.height ?? 0;
+        const scaleX = node.scaleX();
+        const scaleY = node.scaleY();
+        const newWidth = Math.max(5, baseWidth * scaleX);
+        const newHeight = Math.max(5, baseHeight * scaleY);
+
+        updatedElement.width = newWidth;
+        updatedElement.height = newHeight;
+
+        const avgScale = (scaleX + scaleY) / 2;
+        const currentFontSize = element.fontSize ?? 20;
+        updatedElement.fontSize = Math.max(8, Math.round(currentFontSize * avgScale));
+
         node.scaleX(1);
         node.scaleY(1);
       } else if (element.type === 'web-embed') {
@@ -2248,7 +2266,41 @@ export const Canvas: React.FC<CanvasProps> = ({
             }
             if (el.type === 'text') {
               if (el.id === editingTextId) return null;
-              return <Text key={el.id} {...commonProps} strokeWidth={0} fill={resolveStroke(el.stroke)} text={el.text ?? ''} fontSize={el.fontSize ?? 20} fontFamily={el.fontFamily ?? 'Sans-serif'} fontStyle="normal" lineHeight={1.2} align={el.textAlign ?? 'left'} width={el.width ?? 0} height={el.height ?? 0} onDblClick={() => handleTextInput(el.x, el.y, el.id, el.text ?? '', () => setEditingTextId(null))} />;
+              const width = el.width ?? 0;
+              const height = el.height ?? 0;
+
+              return (
+                <Group
+                  key={el.id}
+                  {...commonProps}
+                  onDblClick={() => handleTextInput(el.x, el.y, el.id, el.text ?? '', () => setEditingTextId(null))}
+                >
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={width}
+                    height={height}
+                    fill="rgba(0,0,0,0.001)"
+                    strokeEnabled={false}
+                  />
+                  <Text
+                    x={0}
+                    y={0}
+                    width={width}
+                    height={height}
+                    strokeWidth={0}
+                    fill={resolveStroke(el.stroke)}
+                    text={el.text ?? ''}
+                    fontSize={el.fontSize ?? 20}
+                    fontFamily={el.fontFamily ?? 'Sans-serif'}
+                    fontStyle="normal"
+                    lineHeight={TEXT_LINE_HEIGHT}
+                    align={el.textAlign ?? 'left'}
+                    verticalAlign="middle"
+                    listening={false}
+                  />
+                </Group>
+              );
             }
             if (el.type === 'image') return <ImageElement key={el.id} el={el} activeTool={activeTool} {...commonProps} />;
             if (el.type === 'web-embed') {
