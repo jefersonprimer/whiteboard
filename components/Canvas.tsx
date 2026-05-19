@@ -590,6 +590,13 @@ export const Canvas: React.FC<CanvasProps> = ({
   const laserTimeoutRef = useRef<number | null>(null);
   const laserMaxPoints = 40;
   const laserCursorPosRef = useRef<{ x: number; y: number } | null>(null);
+  const [clipboard, setClipboard] = useState<WhiteboardElement[]>([]);
+  const clipboardRef = useRef<WhiteboardElement[]>([]);
+  const preferInternalClipboardRef = useRef(false);
+
+  useEffect(() => {
+    clipboardRef.current = clipboard;
+  }, [clipboard]);
 
   const lassoPointsRef = useRef<number[]>([]);
   const [isLassoing, setIsLassoing] = useState(false);
@@ -1678,9 +1685,24 @@ export const Canvas: React.FC<CanvasProps> = ({
     };
   }, []);
 
-  const [clipboard, setClipboard] = useState<WhiteboardElement[]>([]);
-
   useEffect(() => {
+    const pasteInternalClipboard = () => {
+      if (clipboardRef.current.length === 0) return false;
+
+      const offset = 20;
+      const newPastedElements = clipboardRef.current.map(el => ({
+        ...el,
+        id: nanoid(),
+        x: el.x + offset,
+        y: el.y + offset,
+      }));
+
+      saveHistory([...elements, ...newPastedElements]);
+      setSelectedIds(newPastedElements.map(el => el.id));
+      setClipboard(newPastedElements);
+      return true;
+    };
+
     const handleKeyDown = async (e: KeyboardEvent) => {
       const isInput = document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.tagName === 'INPUT';
       const isWhiteboardTextarea = document.getElementById('whiteboard-textarea');
@@ -1699,6 +1721,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         const selected = elements.filter(el => selectedIds.includes(el.id));
         if (selected.length > 0) {
           setClipboard(JSON.parse(JSON.stringify(selected))); // Deep clone
+          preferInternalClipboardRef.current = true;
           console.log('Copied', selected.length, 'elements');
         }
         return;
@@ -1706,6 +1729,10 @@ export const Canvas: React.FC<CanvasProps> = ({
 
       // CTRL + V (Paste)
       if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+        if (preferInternalClipboardRef.current && pasteInternalClipboard()) {
+          return;
+        }
+
         // Try to get clipboard content first
         try {
           const clipboardItems = await navigator.clipboard.read();
@@ -1746,6 +1773,7 @@ export const Canvas: React.FC<CanvasProps> = ({
                     };
                     saveHistory([...elements, element]);
                     setSelectedIds([id]);
+                    preferInternalClipboardRef.current = false;
                   }
                 };
                 reader.readAsDataURL(blob);
@@ -1791,31 +1819,29 @@ export const Canvas: React.FC<CanvasProps> = ({
             };
             saveHistory([...elements, element]);
             setSelectedIds([id]);
+            preferInternalClipboardRef.current = false;
             return;
           }
         } catch (err) {
           // Clipboard read failed
         }
 
-        // Paste whiteboard elements from internal clipboard
-        if (clipboard.length === 0) return;
-
-        const offset = 20;
-        const newPastedElements = clipboard.map(el => ({
-          ...el,
-          id: nanoid(),
-          x: el.x + offset,
-          y: el.y + offset,
-        }));
-
-        saveHistory([...elements, ...newPastedElements]);
-        setSelectedIds(newPastedElements.map(el => el.id));
-        setClipboard(newPastedElements);
-        return;
+        pasteInternalClipboard();
       }
     };
+
+    const clearInternalClipboardPriority = () => {
+      preferInternalClipboardRef.current = false;
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('blur', clearInternalClipboardPriority);
+    document.addEventListener('visibilitychange', clearInternalClipboardPriority);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('blur', clearInternalClipboardPriority);
+      document.removeEventListener('visibilitychange', clearInternalClipboardPriority);
+    };
   }, [selectedIds, elements, clipboard, saveHistory, setSelectedIds, defaultProps, isDark]);
 
   // Reset laser state when leaving the laser tool
