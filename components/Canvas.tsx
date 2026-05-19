@@ -2334,6 +2334,7 @@ export const Canvas: React.FC<CanvasProps> = ({
               const h = el.height ?? 250;
               const url = el.text ?? '';
               const urlType = detectUrlType(url);
+              const hasEmbeddedMedia = url.trim() && urlType !== 'unknown';
 
               return (
                 <Group
@@ -2352,9 +2353,9 @@ export const Canvas: React.FC<CanvasProps> = ({
                     width={w}
                     height={h}
                     cornerRadius={10}
-                    fill={isDark ? '#020617' : '#f9fafb'}
-                    stroke={resolveStroke(el.stroke)}
-                    strokeWidth={el.strokeWidth}
+                    fill={hasEmbeddedMedia ? 'transparent' : (isDark ? '#020617' : '#f9fafb')}
+                    stroke={hasEmbeddedMedia ? 'transparent' : resolveStroke(el.stroke)}
+                    strokeWidth={hasEmbeddedMedia ? 0 : el.strokeWidth}
                   />
                   {/* Empty state */}
                   {!url.trim() && (
@@ -2656,8 +2657,7 @@ export const Canvas: React.FC<CanvasProps> = ({
                   height: '100%',
                   objectFit: 'contain',
                   display: 'block',
-                  borderRadius: 5,
-                  backgroundColor: '#000',
+                  borderRadius: 0,
                 }}
               />
             );
@@ -2671,7 +2671,7 @@ export const Canvas: React.FC<CanvasProps> = ({
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                  style={{ width: '100%', height: '100%', border: 'none', borderRadius: 5 }}
+                  style={{ width: '100%', height: '100%', border: 'none', borderRadius: 0 }}
                 />
               );
             }
@@ -2685,7 +2685,7 @@ export const Canvas: React.FC<CanvasProps> = ({
                   frameBorder="0"
                   allow="autoplay; fullscreen; picture-in-picture"
                   allowFullScreen
-                  style={{ width: '100%', height: '100%', border: 'none', borderRadius: 5 }}
+                  style={{ width: '100%', height: '100%', border: 'none', borderRadius: 0 }}
                 />
               );
             }
@@ -2694,7 +2694,7 @@ export const Canvas: React.FC<CanvasProps> = ({
               <video
                 src={url}
                 controls
-                style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 5 }}
+                style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 0 }}
               />
             );
           }
@@ -2712,7 +2712,7 @@ export const Canvas: React.FC<CanvasProps> = ({
                 height: innerH,
                 // Only allow pointer events in interactive mode; otherwise Konva handles all drag/select
                 pointerEvents: interactingEmbedId === el.id ? 'auto' : 'none',
-                borderRadius: 5,
+                borderRadius: 0,
                 overflow: 'hidden',
                 transform: rotation ? `rotate(${rotation}deg)` : undefined,
                 transformOrigin: 'center center',
